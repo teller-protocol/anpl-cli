@@ -112,6 +112,18 @@ export async function callExecute(): Promise<any> {
 
       }]
 
+
+      //fix it for now to remove referral and sig expir
+      let formattedOrderParams = {
+        lender: executeParams.basicOrderParams.lender,
+        principal: executeParams.basicOrderParams.principal,
+        downPayment: executeParams.basicOrderParams.downPayment,
+        duration: executeParams.basicOrderParams.duration,
+        signatureExpiration: executeParams.basicOrderParams.signatureExpiration,
+        interestRate:executeParams.basicOrderParams.interestRate,
+        metadatURI: executeParams.basicOrderParams.metadataURI 
+      }
+
       /*
        address lender;
         uint256 totalPurchasePrice;
@@ -138,7 +150,7 @@ export async function callExecute(): Promise<any> {
     .populateTransaction
     .execute(
       submitBidArgs, 
-      executeParams.basicOrderParams, 
+      formattedOrderParams, 
       executeParams.craSignature , {value, gasLimit, gasPrice} )
 
 
