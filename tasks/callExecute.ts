@@ -101,28 +101,29 @@ export async function callExecute(): Promise<any> {
     ) */
 
 
-    console.log('passing in params',
-      submitBidArgs, 
-      basicOrderParams, 
-      executeParams.craSignature 
-    )
 
-    executeParams.basicOrderParams.additionalRecipients = [{  "amount":"0",
-        "recipient":"0x8De9C5A032463C561423387a9648c5C7BCC5BC90"
-
-      }]
+   // executeParams.basicOrderParams.additionalRecipients = [ ]
 
 
       //fix it for now to remove referral and sig expir
-      let formattedOrderParams = {
-        lender: executeParams.basicOrderParams.lender,
-        principal: executeParams.basicOrderParams.principal,
-        downPayment: executeParams.basicOrderParams.downPayment,
-        duration: executeParams.basicOrderParams.duration,
-        signatureExpiration: executeParams.basicOrderParams.signatureExpiration,
-        interestRate:executeParams.basicOrderParams.interestRate,
-        metadatURI: executeParams.basicOrderParams.metadataURI 
+      let formattedSubmitBidArgs = {
+        lender: submitBidArgs.lender,
+        totalPurchasePrice: submitBidArgs.totalPurchasePrice,
+        principal: submitBidArgs.principal,
+        downPayment: submitBidArgs.downPayment,
+        duration: submitBidArgs.duration,
+        signatureExpiration: submitBidArgs.signatureExpiration,
+        interestRate:submitBidArgs.interestRate,
+        metadataURI: submitBidArgs.metadataURI ,
+     //   referralAddress:"0x0000000000000000000000000000000000000000"
       }
+
+
+    console.log('passing in params',
+    formattedSubmitBidArgs, 
+    basicOrderParams, 
+    executeParams.craSignature 
+  )
 
       /*
        address lender;
@@ -149,8 +150,8 @@ export async function callExecute(): Promise<any> {
     let unsignedTx = await bnplContractInstance
     .populateTransaction
     .execute(
-      submitBidArgs, 
-      formattedOrderParams, 
+      formattedSubmitBidArgs, 
+      basicOrderParams, 
       executeParams.craSignature , {value, gasLimit, gasPrice} )
 
 
