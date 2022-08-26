@@ -107,7 +107,21 @@ export async function callExecute(): Promise<any> {
       executeParams.craSignature 
     )
 
- 
+    executeParams.basicOrderParams.additionalRecipients = [{  "amount":"0",
+        "recipient":"0x8De9C5A032463C561423387a9648c5C7BCC5BC90"
+
+      }]
+
+      /*
+       address lender;
+        uint256 totalPurchasePrice;
+        uint256 principal;
+        uint256 downPayment;
+        uint32 duration;
+        uint32 signatureExpiration;
+        uint16 interestRate;
+        string metadataURI;
+      */
 
     //this address needs to approve the forwarder on tellerv2
   //  lenderAddress =  "0xF4dAb24C52b51cB69Ab62cDE672D3c9Df0B39681"
@@ -118,7 +132,7 @@ export async function callExecute(): Promise<any> {
     var gasLimit = utils.hexlify(25000000);
 
 
-    console.log('meep1')
+    console.log('meep1',value)
 
     let unsignedTx = await bnplContractInstance
     .populateTransaction
