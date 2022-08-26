@@ -15,13 +15,7 @@ describe('BNPL Tasks', () => {
 
     it('should generate execute params', async () => {
 
-        let inputData = require('../../data/inputFromCra.json')
-        
-        let contractsConfig = require('../../data/contractsConfig.json')['rinkeby']
-
-        let outputData = buildExecuteParams( inputData, contractsConfig  )
-
-        expect(outputData).to.exist
+       
 
 
     })

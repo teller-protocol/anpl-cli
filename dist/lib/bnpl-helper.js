@@ -1,160 +1,22 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildExecuteParams = void 0;
-const opensea_helper_1 = require("./opensea-helper");
+exports.buildExecuteParams = exports.calculateTotalPrice = void 0;
 const ethers_1 = require("ethers");
-const moment_1 = __importDefault(require("moment"));
-const constants_1 = require("opensea-js/lib/constants");
-const opensea_helper_2 = require("../lib/opensea-helper");
-const OrderSide = {
-    Buy: 0,
-    Sell: 1
-};
-//let contractsConfig = require('../data/contractsConfig.json')['rinkeby']
 require('dotenv').config();
-const MerkleValidatorABI = require('../abi/MerkleValidator.json');
-function buildExecuteParams(inputData, contractsConfig) {
-    let bidSubmitArgs = {
-        assetContractAddress: inputData.tellerInputs.assetContractAddress,
-        assetTokenId: inputData.tellerInputs.assetTokenId,
-        downPayment: inputData.tellerInputs.downPayment,
-        lenderAddress: inputData.tellerInputs.lenderAddress,
-        principal: inputData.tellerInputs.loanRequired,
-        duration: inputData.tellerInputs.duration,
-        APR: inputData.tellerInputs.interestRate,
-        metadataURI: "ipfs://"
-    };
-    //deployed on rinkeby 
-    let bnplContractAddress = contractsConfig.BNPLContract.address;
-    let openSeaData = inputData.openSeaResponse;
-    //this comes from the opensea API 
-    let sellOrderWithSignature = {
-        feeMethod: (0, opensea_helper_1.parseFeeMethod)(openSeaData.feeMethod),
-        side: OrderSide.Sell,
-        saleKind: (0, opensea_helper_1.parseSaleKind)(openSeaData.saleKind),
-        howToCall: (0, opensea_helper_1.parseHowToCall)(openSeaData.howToCall),
-        quantity: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.quantity),
-        makerReferrerFee: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.makerReferrerFee),
-        waitingForBestCounterOrder: openSeaData.waitingForBestCounterOrder,
-        metadata: (0, opensea_helper_1.parseMetadata)(openSeaData.metadata),
-        exchange: openSeaData.exchange,
-        maker: openSeaData.maker,
-        taker: openSeaData.taker,
-        makerRelayerFee: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.makerRelayerFee),
-        takerRelayerFee: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.takerRelayerFee),
-        makerProtocolFee: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.makerProtocolFee),
-        takerProtocolFee: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.takerProtocolFee),
-        feeRecipient: openSeaData.feeRecipient,
-        target: openSeaData.target,
-        calldata: openSeaData.calldata,
-        replacementPattern: openSeaData.replacementPattern,
-        staticTarget: openSeaData.staticTarget,
-        staticExtradata: openSeaData.staticExtradata,
-        paymentToken: openSeaData.paymentToken,
-        basePrice: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.basePrice),
-        extra: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.extra),
-        listingTime: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.listingTime),
-        expirationTime: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.expirationTime),
-        salt: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.salt),
-        hash: openSeaData.orderHash,
-        v: openSeaData.v,
-        r: openSeaData.r,
-        s: openSeaData.s
-    };
-    const minListingTimestamp = Math.round(Date.now() / 1000);
-    const listingTime = minListingTimestamp - 300; // + moment.duration(1,'day').asSeconds()
-    const expirationTime = listingTime + moment_1.default.duration(2, 'days').asSeconds(); //getMaxOrderExpirationTimestamp()
-    //let privateKey = process.env.WALLET_PRIVATE_KEY
-    // let wallet = new Wallet(privateKey) 
-    const iface = new ethers_1.ethers.utils.Interface(MerkleValidatorABI);
-    /*
-    matchERC721UsingCriteria(
-          address from,
-          address to,
-          IERC721 token,
-          uint256 tokenId,
-          bytes32 root,
-          bytes32[] calldata proof*/
-    //0xfb16a595000000000000000000000000b11ca87e32075817c82cc471994943a4290f4a140000000000000000000000000000000000000000000000000000000000000000000000000000000000000000388f486dbcbe05029ba7adf784459b580b4270320000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000
-    /*
-        function matchERC1155UsingCriteria(
-          address from,
-          address to,
-          IERC1155 token,
-          uint256 tokenId,
-          uint256 amount,
-          bytes32 root,
-          bytes32[] calldata proof
-      ) external returns (bool) {*/
-    let decodedCalldata;
-    let modifiedBuyCallData;
-    let customBuyReplacementPattern;
-    if (openSeaData.calldata.startsWith('0xfb16a595')) {
-        decodedCalldata = iface.decodeFunctionData("matchERC721UsingCriteria", openSeaData.calldata);
-        let buyerDecodedCalldata = Object.assign([], decodedCalldata);
-        buyerDecodedCalldata[1] = bnplContractAddress;
-        modifiedBuyCallData = iface.encodeFunctionData("matchERC721UsingCriteria", buyerDecodedCalldata);
-        customBuyReplacementPattern = "0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+function calculateTotalPrice(basicOrderParams) {
+    let amount = ethers_1.BigNumber.from(basicOrderParams.considerationAmount);
+    for (let additionalRecipient of basicOrderParams.additionalRecipients) {
+        amount = amount.add(ethers_1.BigNumber.from(additionalRecipient.amount));
     }
-    else if (openSeaData.calldata.startsWith('0x96809f9')) {
-        decodedCalldata = iface.decodeFunctionData("matchERC1155UsingCriteria", openSeaData.calldata);
-        let buyerDecodedCalldata = Object.assign([], decodedCalldata);
-        buyerDecodedCalldata[1] = bnplContractAddress;
-        modifiedBuyCallData = iface.encodeFunctionData("matchERC1155UsingCriteria", buyerDecodedCalldata);
-        customBuyReplacementPattern = "0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-    }
-    else {
-        throw new Error('Unknown calldata associated with this order '.concat(openSeaData.calldata));
-    }
-    // Prepare encoded data to be used in a function call
-    console.log('decodedCalldata', decodedCalldata);
-    //we should do this in our contract  
-    //we build this ourselves and dont need to sign it 
-    let newBuyOrder = {
-        feeMethod: (0, opensea_helper_1.parseFeeMethod)(openSeaData.feeMethod),
-        side: OrderSide.Buy,
-        saleKind: (0, opensea_helper_1.parseSaleKind)(openSeaData.saleKind),
-        howToCall: (0, opensea_helper_1.parseHowToCall)(openSeaData.howToCall),
-        quantity: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.quantity),
-        makerReferrerFee: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.makerReferrerFee),
-        waitingForBestCounterOrder: openSeaData.waitingForBestCounterOrder,
-        metadata: (0, opensea_helper_1.parseMetadata)(openSeaData.metadata),
-        exchange: openSeaData.exchange,
-        maker: bnplContractAddress,
-        taker: openSeaData.maker,
-        makerRelayerFee: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.takerRelayerFee),
-        takerRelayerFee: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.makerRelayerFee),
-        makerProtocolFee: opensea_helper_2.OpenseaHelper.makeBigNumber(0),
-        takerProtocolFee: opensea_helper_2.OpenseaHelper.makeBigNumber(0),
-        feeRecipient: ethers_1.ethers.constants.AddressZero,
-        target: openSeaData.target,
-        calldata: modifiedBuyCallData,
-        replacementPattern: customBuyReplacementPattern,
-        staticTarget: openSeaData.staticTarget,
-        staticExtradata: openSeaData.staticExtradata,
-        paymentToken: openSeaData.paymentToken,
-        basePrice: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.basePrice),
-        extra: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.extra),
-        listingTime: opensea_helper_2.OpenseaHelper.makeBigNumber(openSeaData.listingTime),
-        expirationTime: opensea_helper_2.OpenseaHelper.makeBigNumber(expirationTime),
-        salt: opensea_helper_2.OpenseaHelper.generatePseudoRandomSalt()
-    };
-    let buyOrderWithSignature = Object.assign(newBuyOrder, {
-        hash: "",
-        v: 0,
-        r: constants_1.NULL_BLOCK_HASH,
-        s: constants_1.NULL_BLOCK_HASH
-    });
-    let atomicMatchInputs = opensea_helper_2.OpenseaHelper.buildWyvernAtomicMatchParamsFromOrders(buyOrderWithSignature, sellOrderWithSignature);
+    return amount;
+}
+exports.calculateTotalPrice = calculateTotalPrice;
+function buildExecuteParams(inputData) {
+    inputData.submitBidArgs.metadataURI = "ipfs://";
+    // may be able to remove this method as it does nearly nothing now 
     let outputData = {
-        bidSubmitArgs,
-        atomicMatchInputs,
-        valueWei: inputData.tellerInputs.downPayment,
-        buyOrder: newBuyOrder,
-        sellOrder: sellOrderWithSignature,
+        submitBidArgs: inputData.submitBidArgs,
+        basicOrderParams: inputData.basicOrderParams,
         craSignature: inputData.craSignature
     };
     return outputData;

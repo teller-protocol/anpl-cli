@@ -10,12 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const callExecute_1 = require("./callExecute");
-const generateExecuteInputs_1 = require("./generateExecuteInputs");
-const matchOrder_1 = require("./matchOrder");
+const fetchCraResponse_1 = require("./fetchCraResponse");
+//import { matchOrder } from './matchOrder'
 const taskMap = {
-    generateExecuteInputs: generateExecuteInputs_1.generateExecuteInputs,
     callExecute: callExecute_1.callExecute,
-    matchOrder: matchOrder_1.matchOrder
+    fetchCraResponse: fetchCraResponse_1.fetchCraResponse
+    //  matchOrder
 };
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
