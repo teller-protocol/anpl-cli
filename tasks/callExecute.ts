@@ -1,5 +1,5 @@
 
-import {Contract, Wallet, providers, utils, BigNumber} from 'ethers'
+import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 import { calculateTotalPrice } from '../lib/bnpl-helper'
 import { BasicOrderParams } from '../lib/types'
 
@@ -51,7 +51,7 @@ export async function callExecute(): Promise<any> {
 
     let wallet = new Wallet(privateKey).connect(rpcProvider)
  
-
+  console.log(`calling execute using account ${wallet.address}`)
  
 
  
@@ -77,7 +77,7 @@ export async function callExecute(): Promise<any> {
     console.log('lender has approved BNPL as forwarder: ',isApproved)
 
     if(!isApproved) {
-        console.error('ERROR: lender has not approved bnpl as forwarder ')
+        console.error(`ERROR: lender ${lenderAddress} has not approved bnpl as forwarder `)
         return 
     }
 
@@ -91,14 +91,14 @@ export async function callExecute(): Promise<any> {
       throw new Error('Invalid domain separator')
   }
 
-    let typeHash = await bnplContractInstance.getTypeHash(
+   /* let typeHash = await bnplContractInstance.getTypeHash(
       submitBidArgs,
       basicOrderParams.offerToken,
       basicOrderParams.offerIdentifier,
       basicOrderParams.offerAmount,
       submitBidArgs.totalPurchasePrice,
       basicOrderParams.considerationToken
-    ) 
+    ) */
 
 
     console.log('passing in params',
@@ -117,12 +117,18 @@ export async function callExecute(): Promise<any> {
     //Set max gas limit to 4M
     var gasLimit = utils.hexlify(25000000);
 
+
+    console.log('meep1')
+
     let unsignedTx = await bnplContractInstance
     .populateTransaction
     .execute(
       submitBidArgs, 
       executeParams.basicOrderParams, 
       executeParams.craSignature , {value, gasLimit, gasPrice} )
+
+
+    console.log('meep2')
 
     console.log({unsignedTx})
 

@@ -16,8 +16,8 @@
   "goerli":{
 
     "BNPLContract":{
-        "address": "0xA3fA394B347eD3fB76Ca70f98cBDd09f34554107",
-        "domainSeparator":"0x024662606c887dfdf9af862facdfcf4fa9623098f243bd1f0d611e8450601072"
+        "address": "0x234c3FC49B0eBF823B64D347BC979c90f35C763e",
+        "domainSeparator":"0x7e4f4f95cca4f97762c9d13be20b4e0ff463a27c3fd100a2f089923f2123df5e"
     },
     "seaport":{
         "address": "0x00000000006c3852cbef3e08e8df289169ede581"
