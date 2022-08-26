@@ -10,6 +10,24 @@
     "tellerV2":{
         "address": "0x21d3d541937de52ac5e4af6254d0d2134d9b7c9e"
     }
+  },
+
+  "goerli":{
+
+    "BNPLContract":{
+        "address": "0xA3fA394B347eD3fB76Ca70f98cBDd09f34554107"
+    },
+    "seaport":{
+        "address": "0x00000000006c3852cbef3e08e8df289169ede581"
+    },
+    "cryptopunks":{
+      "address": "0x0938a5F48B8f33eea3e4Db4320d73e0e795b1c90"
+    },
+    "tellerV2":{
+        "address": "0x1D0eBC060f2897dAc14E482De600cea7896c0A3E"
+    }
   }
+
+
 
 }

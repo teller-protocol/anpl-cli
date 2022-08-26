@@ -77,7 +77,7 @@ export async function callExecute(): Promise<any> {
  
 
 
-    if( domainSeparator != "0x8af682fe7bb3292a11e8e4f743e2a1fc7eb2954372bb99a7c1932c8ac00b11a1" ){
+    if( domainSeparator != "0x8fb48d426451aba80032b939ea07f377a10fdd82aa899adb4f30a871b7d6e11d" ){
       throw new Error('Invalid domain separator')
   }
 
