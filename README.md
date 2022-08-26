@@ -12,12 +12,14 @@ On the TellerV2 contract that the BNPL marketplace is built on top of, be sure t
 
 
 ### Methodology
--make a request to the CRA server (remote or local) using contractAddress, tokenId, chainId 
 
--parse that request [and append my own order data to it]
+- Configure 'data/craParams.json' to specify how the BNPL transaction should be constructed 
 
--submit that to the BNPL smart contract 
+- Use this configuration to fetch a Cra Server response. It is stored in  data/craResponse.json
+>> yarn task fetchCraResponse 
 
+- submit that craResponse to the BNPL smart contract 
+>> yarn task callExecute
 
 
 ### Run Tasks

@@ -5,9 +5,23 @@ import { BasicOrderParams } from '../lib/types'
 
 require('dotenv').config()
 
-const networkName = "rinkeby"
 
-let contractsConfig = require('../data/contractsConfig.json')[networkName]
+const rpcURI = process.env.GOERLI_RPC_URL
+const privateKey = process.env.WALLET_PRIVATE_KEY
+
+
+const executeConfig = {
+  networkName: "goerli",
+  marketplaceId: 2
+
+}
+//const networkName = "goerli"
+
+//const marketplaceId = 2
+
+
+
+let contractsConfig = require('../data/contractsConfig.json')[executeConfig.networkName]
 
 
 //was 0x519b957ecaa80C5aEd4C5547Ff2Eac3ff5dE229c
@@ -23,14 +37,10 @@ const bnplConfig = {
 
 
 
-const marketplaceId = 3 
-
 export async function callExecute(): Promise<any> {
 
-    let executeParams:any  = require('../data/output.json')
+    let executeParams:any  = require('../data/craResponse.json')
 
-    let rpcURI = process.env.RINKEBY_RPC_URL
-    let privateKey = process.env.WALLET_PRIVATE_KEY
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -63,7 +73,7 @@ export async function callExecute(): Promise<any> {
 
     //let borrowerAddress = wallet.address
 
-    let isApproved = await tellerV2Instance.hasApprovedMarketForwarder(marketplaceId, bnplContractInstance.address, lenderAddress)
+    let isApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
     console.log('lender has approved BNPL as forwarder: ',isApproved)
 
     if(!isApproved) {
@@ -77,7 +87,7 @@ export async function callExecute(): Promise<any> {
  
 
 
-    if( domainSeparator != "0x8fb48d426451aba80032b939ea07f377a10fdd82aa899adb4f30a871b7d6e11d" ){
+    if( domainSeparator !=  contractsConfig.BNPLContract.domainSeparator){
       throw new Error('Invalid domain separator')
   }
 
@@ -92,9 +102,9 @@ export async function callExecute(): Promise<any> {
 
 
     console.log('passing in params',
-    submitBidArgs, 
-    basicOrderParams, 
-    executeParams.craSignature 
+      submitBidArgs, 
+      basicOrderParams, 
+      executeParams.craSignature 
     )
 
  

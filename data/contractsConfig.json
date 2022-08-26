@@ -2,7 +2,8 @@
   "rinkeby":{
 
     "BNPLContract":{
-        "address": "0xdda8028461a69b58D72f4da46f4f050Ec2733968"
+        "address": "0xdda8028461a69b58D72f4da46f4f050Ec2733968",
+        "domainSeparator":"0x8fb48d426451aba80032b939ea07f377a10fdd82aa899adb4f30a871b7d6e11d"
     },
     "seaport":{
         "address": "0x00000000006c3852cbef3e08e8df289169ede581"
@@ -15,7 +16,8 @@
   "goerli":{
 
     "BNPLContract":{
-        "address": "0xA3fA394B347eD3fB76Ca70f98cBDd09f34554107"
+        "address": "0xA3fA394B347eD3fB76Ca70f98cBDd09f34554107",
+        "domainSeparator":"0x024662606c887dfdf9af862facdfcf4fa9623098f243bd1f0d611e8450601072"
     },
     "seaport":{
         "address": "0x00000000006c3852cbef3e08e8df289169ede581"
