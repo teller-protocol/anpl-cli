@@ -11,9 +11,20 @@ Fetch the result of the CRA server and put it in inputOrder.json
 On the TellerV2 contract that the BNPL marketplace is built on top of, be sure to set the trustedForwarder for the market# to be the BNPL marketplace proxy contract.   Also be sure to make the lender and borrower addresses approve the BNPL marketplace proxy contract as a trusted forwarder.  
 
 
+### Methodology
+-make a request to the CRA server (remote or local) using contractAddress, tokenId, chainId 
+
+-parse that request [and append my own order data to it]
+
+-submit that to the BNPL smart contract 
+
+
 
 ### Run Tasks
 
+
 yarn task generateExecuteParams
+>
 
 yarn task callExecute
+>

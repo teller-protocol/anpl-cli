@@ -28,7 +28,7 @@ export function calculateTotalPrice( basicOrderParams: any ): BigNumber {
   return amount 
 }
 
-export function buildExecuteParams(inputData:CraResponse, contractsConfig?: ContractsConfig ): ExecuteParams {
+export function buildExecuteParams(inputData:CraResponse ): ExecuteParams {
 
   inputData.submitBidArgs.metadataURI = "ipfs://"
   

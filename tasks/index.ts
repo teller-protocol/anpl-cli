@@ -1,13 +1,15 @@
  
 
 import { callExecute } from './callExecute'
-import { generateExecuteParams } from './generateExecuteParams'
+import { fetchCraResponse } from './fetchCraResponse'
+
 //import { matchOrder } from './matchOrder'
 
  
 const taskMap: any = {
-  generateExecuteParams,
+  
   callExecute,
+  fetchCraResponse
 //  matchOrder
 }
 
