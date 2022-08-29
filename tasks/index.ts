@@ -2,14 +2,15 @@
 
 import { callExecute } from './callExecute'
 import { fetchCraResponse } from './fetchCraResponse'
-
+import { approveMarket } from './approveMarket'
 //import { matchOrder } from './matchOrder'
 
  
 const taskMap: any = {
   
   callExecute,
-  fetchCraResponse
+  fetchCraResponse,
+  approveMarket
 //  matchOrder
 }
 

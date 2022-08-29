@@ -59,9 +59,7 @@ export async function callExecute(): Promise<any> {
 
 
 
-   let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)  //calculateTotalPrice( executeParams.basicOrderParams )
-
-     
+   let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
 
    let lenderAddress = submitBidArgs.lender
 
@@ -70,8 +68,7 @@ export async function callExecute(): Promise<any> {
    if(!basicOrderParams.offererConduitKey){
      throw new Error('Missing offererConduitKey')
    }
-
-    //let borrowerAddress = wallet.address
+ 
 
     let isApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
     console.log('lender has approved BNPL as forwarder: ',isApproved)
@@ -82,14 +79,15 @@ export async function callExecute(): Promise<any> {
     }
 
 
-    let domainSeparator = await bnplContractInstance.DOMAIN_SEPARATOR()
+   /* let domainSeparator = await bnplContractInstance.DOMAIN_SEPARATOR()
     console.log({domainSeparator})
  
 
 
     if( domainSeparator !=  contractsConfig.BNPLContract.domainSeparator){
       throw new Error('Invalid domain separator')
-  }
+   }
+  */
 
    /* let typeHash = await bnplContractInstance.getTypeHash(
       submitBidArgs,
@@ -132,9 +130,9 @@ export async function callExecute(): Promise<any> {
   //  lenderAddress =  "0xF4dAb24C52b51cB69Ab62cDE672D3c9Df0B39681"
 
     //Set price to 1 Gwei
-    let gasPrice = utils.hexlify(8000000000);
+    let gasPrice = utils.hexlify(8_000_000_000);
     //Set max gas limit to 4M
-    var gasLimit = utils.hexlify(25000000);
+    var gasLimit = utils.hexlify(10_000_000);  
 
 
     console.log('meep1',value)
@@ -147,7 +145,7 @@ export async function callExecute(): Promise<any> {
       executeParams.craSignature , {value, gasLimit, gasPrice} )
 
 
-    console.log('meep2')
+    console.log('meep2', Object.entries(basicOrderParams))
 
     console.log({unsignedTx})
 

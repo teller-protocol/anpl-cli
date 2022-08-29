@@ -1,6 +1,6 @@
 {
     "craServerURL":"http://localhost:8000/api/getOrderDetails",
     "contractAddress":"0x0938a5F48B8f33eea3e4Db4320d73e0e795b1c90",
-    "tokenId":"44",
+    "tokenId":"46",
     "chainId":"5"
 }
