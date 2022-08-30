@@ -1,7 +1,7 @@
 
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 import { calculateTotalPrice } from '../lib/bnpl-helper'
-import { BasicOrderParams } from '../lib/types'
+import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
@@ -104,24 +104,24 @@ export async function callExecute(): Promise<any> {
 
 
       //fix it for now to remove referral and sig expir
-      let formattedSubmitBidArgs = {
-        lender: submitBidArgs.lender,
+      let formattedSubmitBidArgs:SubmitBidArgs = {
         totalPurchasePrice: submitBidArgs.totalPurchasePrice,
-        principal: submitBidArgs.principal,
         downPayment: submitBidArgs.downPayment,
-        duration: submitBidArgs.duration,
-        signatureExpiration: submitBidArgs.signatureExpiration,
+        lender: submitBidArgs.lender,
+        principal: submitBidArgs.principal,
+        duration: submitBidArgs.duration,       
         interestRate:submitBidArgs.interestRate,
         metadataURI: submitBidArgs.metadataURI ,
-     //   referralAddress:"0x0000000000000000000000000000000000000000"
+        signatureExpiration: submitBidArgs.signatureExpiration,
+        referralAddress: submitBidArgs.referralAddress
       }
 
 
     console.log('passing in params',
-    formattedSubmitBidArgs, 
-    basicOrderParams, 
-    executeParams.craSignature 
-  )
+      formattedSubmitBidArgs, 
+      basicOrderParams, 
+      executeParams.craSignature 
+    )
  
    // basicOrderParams.offererConduitKey = "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000"
   //basicOrderParams.signature= "0x5c8a6fd29db37f9b53fcf1cce21c62e68ca0684c28e0320cb27e8568210baf37644e1258430b698cfe533334621ddd82a12e46dd184823ab318b8ee6ff0fa2dd1c"
@@ -153,8 +153,7 @@ export async function callExecute(): Promise<any> {
 
     let response = await wallet.sendTransaction(unsignedTx);
     console.log('response',response)
-         //erc20 low level call failed (weth approval )->sending weth from lender 
-    
+      
    
     return true 
   }

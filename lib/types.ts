@@ -1,15 +1,17 @@
 import { BigNumber } from "ethers";
 
 export interface SubmitBidArgs {
-    //assetContractAddress: string,
-    //assetTokenId: string,
-    totalPurchasePrice:string,
-    downPayment: string,
-    lender: string, 
-    principal: string,
-    duration: string,
-    interestRate: string,
-    metadataURI: string
+   
+  totalPurchasePrice: string
+  downPayment: string
+  lender: string
+  principal: string
+  duration: string
+  interestRate: string
+  metadataURI: string
+  signatureExpiration: string
+
+  referralAddress: string
 }
  
 
