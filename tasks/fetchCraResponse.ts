@@ -14,7 +14,8 @@ export async function fetchCraResponse(): Promise<any> {
   let response = await axiosPostRequest(inputData.craServerURL,{
     asset_contract_address:inputData.contractAddress,
     token_id:inputData.tokenId,
-    chain_id:inputData.chainId
+    chain_id:inputData.chainId,
+    signature_version: 3
   })
 
   if(!response.success || !response.data) throw new Error('cra error '.concat(response.error.toString()))

@@ -103,17 +103,20 @@ export async function callExecute(): Promise<any> {
    // executeParams.basicOrderParams.additionalRecipients = [ ]
 
 
+ 
+
+
       //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
-        totalPurchasePrice: submitBidArgs.totalPurchasePrice,
-        downPayment: submitBidArgs.downPayment,
         lender: submitBidArgs.lender,
+        totalPurchasePrice: submitBidArgs.totalPurchasePrice,
         principal: submitBidArgs.principal,
+        downPayment: submitBidArgs.downPayment,       
         duration: submitBidArgs.duration,       
-        interestRate:submitBidArgs.interestRate,
-        metadataURI: submitBidArgs.metadataURI ,
         signatureExpiration: submitBidArgs.signatureExpiration,
-        referralAddress: submitBidArgs.referralAddress
+        interestRate:submitBidArgs.interestRate,
+        referralAddress: submitBidArgs.referralAddress,
+        metadataURI: submitBidArgs.metadataURI ,
       }
 
 

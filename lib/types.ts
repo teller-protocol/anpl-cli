@@ -1,19 +1,29 @@
 import { BigNumber } from "ethers";
 
 export interface SubmitBidArgs {
-   
-  totalPurchasePrice: string
-  downPayment: string
   lender: string
+  totalPurchasePrice: string
   principal: string
+  downPayment: string
   duration: string
-  interestRate: string
-  metadataURI: string
   signatureExpiration: string
-
+  interestRate: string
   referralAddress: string
+  metadataURI: string 
 }
  
+
+/*
+         address lender;
+        uint256 totalPurchasePrice;
+        uint256 principal;
+        uint256 downPayment;
+        uint32 duration;
+        uint32 signatureExpiration;
+        uint16 interestRate;
+        address referralAddress;
+        string metadataURI;    
+*/
 
 
 export interface CraResponse {
