@@ -55,6 +55,12 @@
         "internalType": "address",
         "name": "lender",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "referralAddress",
+        "type": "address"
       }
     ],
     "name": "AssetPurchaseWithLoan",
@@ -90,6 +96,25 @@
       }
     ],
     "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_feeRecipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "allowed",
+        "type": "bool"
+      }
+    ],
+    "name": "SetAllowedFeeRecipient",
     "type": "event"
   },
   {
@@ -318,6 +343,25 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "allowedFeeRecipients",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "bidId",
         "type": "uint256"
@@ -432,6 +476,16 @@
         "internalType": "address",
         "name": "lender",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "referralAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "principal",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -514,6 +568,11 @@
             "internalType": "uint16",
             "name": "interestRate",
             "type": "uint16"
+          },
+          {
+            "internalType": "address",
+            "name": "referralAddress",
+            "type": "address"
           },
           {
             "internalType": "string",
@@ -749,6 +808,11 @@
             "type": "uint16"
           },
           {
+            "internalType": "address",
+            "name": "referralAddress",
+            "type": "address"
+          },
+          {
             "internalType": "string",
             "name": "metadataURI",
             "type": "string"
@@ -918,6 +982,24 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_feeRecipient",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "_allowed",
+        "type": "bool"
+      }
+    ],
+    "name": "setAllowedFeeRecipient",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "address",
@@ -955,6 +1037,11 @@
             "type": "uint16"
           },
           {
+            "internalType": "address",
+            "name": "referralAddress",
+            "type": "address"
+          },
+          {
             "internalType": "string",
             "name": "metadataURI",
             "type": "string"
@@ -989,6 +1076,40 @@
       }
     ],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum IBNPLMarket.TokenType",
+        "name": "tokenType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferLegacyAssetToEscrow",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
