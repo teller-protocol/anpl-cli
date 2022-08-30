@@ -135,6 +135,11 @@ export async function callExecute(): Promise<any> {
     var gasLimit = utils.hexlify(10_000_000);  
 
 
+    if((basicOrderParams.basicOrderType) > 22){
+      throw new Error('invalid basic order type')
+    }
+
+
     console.log('meep1',value)
 
     let unsignedTx = await bnplContractInstance
@@ -144,10 +149,7 @@ export async function callExecute(): Promise<any> {
       basicOrderParams, 
       executeParams.craSignature , {value, gasLimit, gasPrice} )
 
-
-    console.log('meep2', Object.entries(basicOrderParams))
-
-    console.log({unsignedTx})
+  
 
     let response = await wallet.sendTransaction(unsignedTx);
     console.log('response',response)

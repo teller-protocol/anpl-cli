@@ -30,7 +30,7 @@ export async function axiosGetRequest(
     return response
   }
 
-  return { success: false, data: 'Unknown axios request error' }
+  return { success: false, error: 'Unknown axios request error' }
 }
 
 export async function axiosPostRequest(
@@ -45,7 +45,13 @@ export async function axiosPostRequest(
 
         let body = res.data 
 
-        resolve({ success: true, data: body.data })
+        if(body){
+          resolve({ success: true, data: body.data, error:body.error })
+        }else{
+          resolve({ success: false, error:"no response from server" })
+        }
+
+       
       })
       .catch(function (error) {
         console.error(error)
@@ -53,9 +59,9 @@ export async function axiosPostRequest(
       })
   })
 
-  if (response) {
+  if (response ) {
     return response
   }
 
-  return { success: false, data: 'Unknown axios request error' }
+  return { success: false, error: 'Unknown axios request error' }
 }

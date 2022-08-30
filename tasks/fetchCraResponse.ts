@@ -17,7 +17,7 @@ export async function fetchCraResponse(): Promise<any> {
     chain_id:inputData.chainId
   })
 
-  if(!response.success) throw new Error(response.error)
+  if(!response.success || !response.data) throw new Error('cra error '.concat(response.error.toString()))
  
 
   let outputData = buildExecuteParams( response.data  )
