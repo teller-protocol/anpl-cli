@@ -1,6 +1,8 @@
  
 
 import { callExecute } from './callExecute'
+import { submitDiscrete } from './submitDiscrete'
+import { acceptDiscrete } from './acceptDiscrete'
 import { fetchCraResponse } from './fetchCraResponse'
 import { approveMarket } from './approveMarket'
 //import { matchOrder } from './matchOrder'
@@ -9,6 +11,8 @@ import { approveMarket } from './approveMarket'
 const taskMap: any = {
   
   callExecute,
+  submitDiscrete,
+  acceptDiscrete,
   fetchCraResponse,
   approveMarket
 //  matchOrder
