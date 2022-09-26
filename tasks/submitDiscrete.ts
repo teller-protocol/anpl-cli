@@ -1,36 +1,35 @@
 
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
-import { networkNameFromChainId } from '../lib/app-helper'
+import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
 import { axiosPostRequest } from '../lib/axios-helper'
-import { calculateTotalPrice, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
+import { calculateTotalPrice, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
-
-const rpcURI = process.env.GOERLI_RPC_URL
-const privateKey = process.env.BORROWER_PRIVATE_KEY
-
+ 
+const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY
 
 
-const craServerURL="http://localhost:8000/api/getOrderDetails"
+ 
 
-const bnplAssetConfig = {
-  tokenAddress:"0x3af8ccd154490b61d6a3ca06599517086fd746e1",
-  tokenId:"0",
-  tokenQuantity:"1"
-}
 
 const executeConfig = {
-  chainId: 5, //goerli 
+  
   marketplaceId: 3
 
 } 
 
 
+let tokenInputData = require('../data/tokenInputData.json')
+ 
 
-let networkName = networkNameFromChainId( executeConfig.chainId  )
+let networkName = networkNameFromChainId( tokenInputData.chainId  )
 let contractsConfig = require('../data/contractsConfig.json')[networkName]
+
+
+const rpcURI = getRpcUrlFromNetworkName(networkName) 
+
 
 
 //was 0x519b957ecaa80C5aEd4C5547Ff2Eac3ff5dE229c
@@ -62,14 +61,18 @@ export async function submitDiscrete(): Promise<any> {
     let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
 
 
-    let craResponse = await axiosPostRequest(craServerURL,{
-      asset_contract_address:bnplAssetConfig.tokenAddress,
-      token_id:bnplAssetConfig.tokenId,
-      quantity: bnplAssetConfig.tokenQuantity,
-
-      chain_id:executeConfig.chainId,    
+    let craInputs = {
+      asset_contract_address:tokenInputData.tokenAddress,
+      token_id:tokenInputData.tokenId,
+      quantity: tokenInputData.tokenQuantity,
+ 
+      chain_id:tokenInputData.chainId,    
       signature_version: signatureVersion
-    })
+    }
+
+    let craResponse = await performCraRequest( craInputs  )
+    
+ 
 
     if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
   
@@ -78,9 +81,9 @@ export async function submitDiscrete(): Promise<any> {
 
 
 
-    if(!privateKey) throw new Error('Missing privateKey')
+    if(!borrowerPrivateKey) throw new Error('Missing privateKey')
 
-    let wallet = new Wallet(privateKey).connect(rpcProvider)
+    let wallet = new Wallet(borrowerPrivateKey).connect(rpcProvider)
  
     console.log(`calling execute using account ${wallet.address}`)
  
@@ -105,34 +108,7 @@ export async function submitDiscrete(): Promise<any> {
         return 
     }
 
-
-   /* let domainSeparator = await bnplContractInstance.DOMAIN_SEPARATOR()
-    console.log({domainSeparator})
  
-
-
-    if( domainSeparator !=  contractsConfig.BNPLContract.domainSeparator){
-      throw new Error('Invalid domain separator')
-   }
-  */
-
-   /* let typeHash = await bnplContractInstance.getTypeHash(
-      submitBidArgs,
-      basicOrderParams.offerToken,
-      basicOrderParams.offerIdentifier,
-      basicOrderParams.offerAmount,
-      submitBidArgs.totalPurchasePrice,
-      basicOrderParams.considerationToken
-    ) */
-
-
-
-   // executeParams.basicOrderParams.additionalRecipients = [ ]
-
-
- 
-
-
       //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
         lender: submitBidArgs.lender,

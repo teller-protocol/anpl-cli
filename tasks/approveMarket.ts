@@ -1,14 +1,13 @@
 
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
-import { networkNameFromChainId } from '../lib/app-helper'
+import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
 import { calculateTotalPrice } from '../lib/bnpl-helper'
 import { BasicOrderParams } from '../lib/types'
 
 require('dotenv').config()
 
-
-const rpcURI = process.env.GOERLI_RPC_URL
-const privateKey = process.env.WALLET_PRIVATE_KEY
+ 
+const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY
 const lenderKey = process.env.LENDER_PRIVATE_KEY
 
 
@@ -40,27 +39,30 @@ export async function approveMarket(): Promise<any> {
 
     const marketId = executeConfig.marketplaceId
 
+
+    const rpcURI = getRpcUrlFromNetworkName(networkName) 
+
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
     let tellerV2Instance = new Contract(tellerV2Config.address,tellerV2Config.abi, rpcProvider)
     let bnplContractInstance = new Contract(bnplConfig.address,bnplConfig.abi,rpcProvider)
 
-    if(!privateKey) throw new Error('Missing privateKey')
+    if(!borrowerPrivateKey) throw new Error('Missing borrowerPrivateKey')
     if(!lenderKey) throw new Error('Missing lenderKey')
 
-    let wallet = new Wallet(privateKey).connect(rpcProvider)
+    let marketOwnerWallet = new Wallet(borrowerPrivateKey).connect(rpcProvider)
  
-   console.log(`calling approveMarket using account ${wallet.address}`)
+   console.log(`calling approveMarket using account ${marketOwnerWallet.address}`)
  
     let lender = new Wallet(lenderKey).connect(rpcProvider)
  
 
     console.log('setting trusted market forwarder ')
 
-    let setTrusted = await tellerV2Instance.connect(wallet).setTrustedMarketForwarder(marketId,bnplConfig.address)
+    let setTrusted = await tellerV2Instance.connect(marketOwnerWallet).setTrustedMarketForwarder(marketId,bnplConfig.address)
     await setTrusted.wait()    
     
-    let ownerApproveMarket = await tellerV2Instance.connect(wallet).approveMarketForwarder(marketId,bnplConfig.address)
+    let ownerApproveMarket = await tellerV2Instance.connect(marketOwnerWallet).approveMarketForwarder(marketId,bnplConfig.address)
     await ownerApproveMarket.wait()
 
     let lenderApproveMarket = await tellerV2Instance.connect(lender).approveMarketForwarder(marketId,bnplConfig.address)

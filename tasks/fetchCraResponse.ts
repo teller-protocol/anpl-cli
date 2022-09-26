@@ -40,16 +40,16 @@ export async function fetchCraResponse(): Promise<any> {
   
   let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
 
-    let craInputs = {
-      asset_contract_address:tokenInputData.tokenAddress,
-      token_id:tokenInputData.tokenId,
-      quantity: tokenInputData.tokenQuantity,
- 
-      chain_id:tokenInputData.chainId,    
-      signature_version: signatureVersion
-    }
+  let craInputs = {
+    asset_contract_address:tokenInputData.tokenAddress,
+    token_id:tokenInputData.tokenId,
+    quantity: tokenInputData.tokenQuantity,
 
-    let craResponse = await performCraRequest( craInputs  )
+    chain_id:tokenInputData.chainId,    
+    signature_version: signatureVersion
+  }
+
+  let craResponse = await performCraRequest( craInputs  )
 
   if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
  
