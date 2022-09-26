@@ -1,28 +1,60 @@
 
+
+import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 import fs from 'fs'
+import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper';
 import { axiosPostRequest } from '../lib/axios-helper';
-import { buildExecuteParams } from '../lib/bnpl-helper';
+import { buildExecuteParams, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper';
+
+
+
+
+let tokenInputData = require('../data/tokenInputData.json')
+let networkName = networkNameFromChainId( tokenInputData.chainId  )
+let contractsConfig = require('../data/contractsConfig.json')[networkName]
+
+
+const rpcURI = getRpcUrlFromNetworkName(networkName) 
+
+
+//was 0x519b957ecaa80C5aEd4C5547Ff2Eac3ff5dE229c
+const tellerV2Config = {
+    address: contractsConfig.tellerV2.address,
+    abi: require('../abi/TellerV2.json')
+}
+
+const bnplConfig = {
+    address: contractsConfig.BNPLContract.address,
+    abi: require('../abi/BNPLMarket.json')
+  }
+
+
 
 export async function fetchCraResponse(): Promise<any> {
 
-  let inputData = require('../data/craParams.json')
+  let rpcProvider = new providers.JsonRpcProvider( rpcURI )
+    
+ // let tellerV2Instance = new Contract(tellerV2Config.address,tellerV2Config.abi, rpcProvider)
+  let bnplContractInstance = new Contract(bnplConfig.address,bnplConfig.abi,rpcProvider)
 
-  //inputData.lenderAddress = "0xF4dAb24C52b51cB69Ab62cDE672D3c9Df0B39681"
+  
+  let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
 
-  //let contractsConfig = require('../data/contractsConfig.json')['rinkeby']
+    let craInputs = {
+      asset_contract_address:tokenInputData.tokenAddress,
+      token_id:tokenInputData.tokenId,
+      quantity: tokenInputData.tokenQuantity,
+ 
+      chain_id:tokenInputData.chainId,    
+      signature_version: signatureVersion
+    }
 
-  let response = await axiosPostRequest(inputData.craServerURL,{
-    asset_contract_address:inputData.contractAddress,
-    token_id:inputData.tokenId,
-    chain_id:inputData.chainId,
-    quantity: inputData.quantity,
-    signature_version: inputData.signatureVersion
-  })
+    let craResponse = await performCraRequest( craInputs  )
 
-  if(!response.success || !response.data) throw new Error('cra error '.concat(response.error.toString()))
+  if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
  
 
-  let outputData = buildExecuteParams( response.data  )
+  let outputData = buildExecuteParams( craResponse.data  )
 
 
   try {

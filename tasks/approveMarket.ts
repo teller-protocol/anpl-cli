@@ -1,5 +1,6 @@
 
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
+import { networkNameFromChainId } from '../lib/app-helper'
 import { calculateTotalPrice } from '../lib/bnpl-helper'
 import { BasicOrderParams } from '../lib/types'
 
@@ -12,13 +13,13 @@ const lenderKey = process.env.LENDER_PRIVATE_KEY
 
 
 const executeConfig = {
-  networkName: "goerli",
-  marketplaceId: 2
+  chainId: 5, //goerli 
+  marketplaceId: 3
 } 
 
-const marketId = 2
 
-let contractsConfig = require('../data/contractsConfig.json')[executeConfig.networkName]
+let networkName = networkNameFromChainId( executeConfig.chainId  )
+let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
  
 const tellerV2Config = {
@@ -35,8 +36,9 @@ const bnplConfig = {
 
 export async function approveMarket(): Promise<any> {
 
-    let executeParams:any  = require('../data/craResponse.json')
+    //let executeParams:any  = require('../data/craResponse.json')
 
+    const marketId = executeConfig.marketplaceId
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -56,9 +58,7 @@ export async function approveMarket(): Promise<any> {
     console.log('setting trusted market forwarder ')
 
     let setTrusted = await tellerV2Instance.connect(wallet).setTrustedMarketForwarder(marketId,bnplConfig.address)
-    await setTrusted.wait()
-
-    
+    await setTrusted.wait()    
     
     let ownerApproveMarket = await tellerV2Instance.connect(wallet).approveMarketForwarder(marketId,bnplConfig.address)
     await ownerApproveMarket.wait()
@@ -76,11 +76,7 @@ export async function approveMarket(): Promise<any> {
         return 
     }
 
- 
-
   
- 
-   
     return true 
   }
   

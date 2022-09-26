@@ -1,27 +1,36 @@
 
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
-import { calculateTotalPrice } from '../lib/bnpl-helper'
+import { networkNameFromChainId } from '../lib/app-helper'
+import { axiosPostRequest } from '../lib/axios-helper'
+import { calculateTotalPrice, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
 
 const rpcURI = process.env.GOERLI_RPC_URL
-const privateKey = process.env.WALLET_PRIVATE_KEY
+const privateKey = process.env.BORROWER_PRIVATE_KEY
 
+
+
+const craServerURL="http://localhost:8000/api/getOrderDetails"
+
+const bnplAssetConfig = {
+  tokenAddress:"0x3af8ccd154490b61d6a3ca06599517086fd746e1",
+  tokenId:"0",
+  tokenQuantity:"1"
+}
 
 const executeConfig = {
-  networkName: "goerli",
-  marketplaceId: 2
+  chainId: 5, //goerli 
+  marketplaceId: 3
 
-}
-//const networkName = "goerli"
-
-//const marketplaceId = 2
+} 
 
 
 
-let contractsConfig = require('../data/contractsConfig.json')[executeConfig.networkName]
+let networkName = networkNameFromChainId( executeConfig.chainId  )
+let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
 
 //was 0x519b957ecaa80C5aEd4C5547Ff2Eac3ff5dE229c
@@ -39,12 +48,35 @@ const bnplConfig = {
 
 export async function submitDiscrete(): Promise<any> {
 
-    let executeParams:any  = require('../data/craResponse.json')
+    //let executeParams:any  = require('../data/craResponse.json')
+
+ 
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
     let tellerV2Instance = new Contract(tellerV2Config.address,tellerV2Config.abi, rpcProvider)
     let bnplContractInstance = new Contract(bnplConfig.address,bnplConfig.abi,rpcProvider)
+
+
+
+    let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
+
+
+    let craResponse = await axiosPostRequest(craServerURL,{
+      asset_contract_address:bnplAssetConfig.tokenAddress,
+      token_id:bnplAssetConfig.tokenId,
+      quantity: bnplAssetConfig.tokenQuantity,
+
+      chain_id:executeConfig.chainId,    
+      signature_version: signatureVersion
+    })
+
+    if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
+  
+
+    const executeParams = craResponse.data 
+
+
 
     if(!privateKey) throw new Error('Missing privateKey')
 
@@ -52,17 +84,17 @@ export async function submitDiscrete(): Promise<any> {
  
     console.log(`calling execute using account ${wallet.address}`)
  
-   const submitBidArgs = executeParams.submitBidArgs
+    const submitBidArgs = executeParams.submitBidArgs
 
-   let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
+    let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
 
-   let lenderAddress = submitBidArgs.lender
+    let lenderAddress = submitBidArgs.lender
 
-   let basicOrderParams:BasicOrderParams = executeParams.basicOrderParams
+    let basicOrderParams:BasicOrderParams = executeParams.basicOrderParams
 
-   if(!basicOrderParams.offererConduitKey){
-     throw new Error('Missing offererConduitKey')
-   }
+    if(!basicOrderParams.offererConduitKey){
+      throw new Error('Missing offererConduitKey')
+    }
  
 
     let isApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)

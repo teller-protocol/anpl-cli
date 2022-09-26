@@ -1,28 +1,31 @@
 
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
-import { calculateTotalPrice } from '../lib/bnpl-helper'
+import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
+import { axiosPostRequest } from '../lib/axios-helper'
+import { buildExecuteParams, calculateTotalPrice, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
+const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY
 
-const rpcURI = process.env.GOERLI_RPC_URL
-const privateKey = process.env.WALLET_PRIVATE_KEY
 
+ 
 
 const executeConfig = {
-  networkName: "goerli",
+   
   marketplaceId: 3
 
-}
-//const networkName = "goerli"
-
-//const marketplaceId = 2
+} 
 
 
+let tokenInputData = require('../data/tokenInputData.json')
+let networkName = networkNameFromChainId( tokenInputData.chainId  )
+let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
-let contractsConfig = require('../data/contractsConfig.json')[executeConfig.networkName]
 
+
+const rpcURI = getRpcUrlFromNetworkName(networkName) 
 
 //was 0x519b957ecaa80C5aEd4C5547Ff2Eac3ff5dE229c
 const tellerV2Config = {
@@ -39,19 +42,47 @@ const bnplConfig = {
 
 export async function callExecute(): Promise<any> {
 
-    let executeParams:any  = require('../data/craResponse.json')
 
+    
+ 
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
     let tellerV2Instance = new Contract(tellerV2Config.address,tellerV2Config.abi, rpcProvider)
     let bnplContractInstance = new Contract(bnplConfig.address,bnplConfig.abi,rpcProvider)
 
-    if(!privateKey) throw new Error('Missing privateKey')
 
-    let wallet = new Wallet(privateKey).connect(rpcProvider)
+    let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
+
+    let craInputs = {
+      asset_contract_address:tokenInputData.tokenAddress,
+      token_id:tokenInputData.tokenId,
+      quantity: tokenInputData.tokenQuantity,
  
-  console.log(`calling execute using account ${wallet.address}`)
+      chain_id:tokenInputData.chainId,    
+      signature_version: signatureVersion
+    }
+
+    let craResponse = await performCraRequest( craInputs  )
+    
+
+    if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
+  
+
+    let executeParams = craResponse.data 
+
+    if(typeof(executeParams.submitBidArgs.metadataURI) == 'undefined'){
+      executeParams.submitBidArgs.metadataURI = "ipfs://"
+    }
+
+
+
+
+    if(!borrowerPrivateKey) throw new Error('Missing borrowerPrivateKey')
+
+    let borrowerWallet = new Wallet(borrowerPrivateKey).connect(rpcProvider)
+ 
+  console.log(`calling execute using account ${borrowerWallet.address}`)
  
 
  
@@ -78,31 +109,7 @@ export async function callExecute(): Promise<any> {
         return 
     }
 
-
-   /* let domainSeparator = await bnplContractInstance.DOMAIN_SEPARATOR()
-    console.log({domainSeparator})
  
-
-
-    if( domainSeparator !=  contractsConfig.BNPLContract.domainSeparator){
-      throw new Error('Invalid domain separator')
-   }
-  */
-
-   /* let typeHash = await bnplContractInstance.getTypeHash(
-      submitBidArgs,
-      basicOrderParams.offerToken,
-      basicOrderParams.offerIdentifier,
-      basicOrderParams.offerAmount,
-      submitBidArgs.totalPurchasePrice,
-      basicOrderParams.considerationToken
-    ) */
-
-
-
-   // executeParams.basicOrderParams.additionalRecipients = [ ]
-
-
  
 
 
@@ -141,10 +148,7 @@ export async function callExecute(): Promise<any> {
     if((basicOrderParams.basicOrderType) > 22){
       throw new Error('invalid basic order type')
     }
-
-
-    console.log('meep1',value)
-
+ 
     let unsignedTx = await bnplContractInstance
     .populateTransaction
     .execute(
@@ -154,7 +158,7 @@ export async function callExecute(): Promise<any> {
 
   
 
-    let response = await wallet.sendTransaction(unsignedTx);
+    let response = await borrowerWallet.sendTransaction(unsignedTx);
     console.log('response',response)
       
    
