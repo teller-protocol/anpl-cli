@@ -40,7 +40,7 @@ const tellerV2Config = {
 
 const bnplConfig = {
     address: contractsConfig.BNPLContract.address,
-    abi: require('../abi/BNPLMarket.json')
+    abi: require('../abi/BNPLMarketV3.json')
   }
 
 
@@ -89,9 +89,15 @@ export async function submitDiscrete(): Promise<any> {
  
     const submitBidArgs = executeParams.submitBidArgs
 
-    let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
+   // let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
 
-    let lenderAddress = submitBidArgs.lender
+    ///let lenderAddress = submitBidArgs.lender
+
+
+
+    submitBidArgs.lender = ethers.constants.AddressZero
+
+
 
     let basicOrderParams:BasicOrderParams = executeParams.basicOrderParams
 
@@ -99,14 +105,7 @@ export async function submitDiscrete(): Promise<any> {
       throw new Error('Missing offererConduitKey')
     }
  
-
-    let isApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
-    console.log('lender has approved BNPL as forwarder: ',isApproved)
-
-    if(!isApproved) {
-        console.error(`ERROR: lender ${lenderAddress} has not approved bnpl as forwarder `)
-        return 
-    }
+ 
 
  
       //fix it for now to remove referral and sig expir
@@ -150,7 +149,7 @@ export async function submitDiscrete(): Promise<any> {
       formattedSubmitBidArgs, 
       assetContractAddress,
       assetTokenId,
-      assetQuantity , {value, gasLimit, gasPrice} )
+      assetQuantity , {gasLimit, gasPrice} )
 
   
 
