@@ -12,7 +12,7 @@ const privateKey = process.env.WALLET_PRIVATE_KEY
 
 const executeConfig = {
   networkName: "goerli",
-  marketplaceId: 2
+  marketplaceId: 3
 
 }
 //const networkName = "goerli"
