@@ -6,6 +6,18 @@ import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
+const yargs = require('yargs').argv
+ 
+
+
+/*
+
+  Borrower needs to approve WETH to the bnpl contract 
+  Lender needs to approve WETH to the Tellerv2 contract 
+
+  WETH goerli : 0xffc94fB06B924e6dBA5F0325bbed941807a018CD 
+
+*/
 
  
 const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
@@ -13,15 +25,14 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
 
 const executeConfig = {
   
-  marketplaceId: 3,
-  bidId: 3
+  marketplaceId: 2,
+  chainId: 5 
+ 
 }
  
-
-
-
-let tokenInputData = require('../data/tokenInputData.json')
-let networkName = networkNameFromChainId( tokenInputData.chainId  )
+ 
+ 
+let networkName = networkNameFromChainId( executeConfig.chainId  )
 let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
 
@@ -35,12 +46,15 @@ const tellerV2Config = {
 
 const bnplConfig = {
     address: contractsConfig.BNPLContract.address,
-    abi: require('../abi/BNPLMarket.json')
+    abi: require('../abi/BNPLMarketV3.json')
   }
 
 
 
-export async function acceptDiscrete(): Promise<any> {
+export async function acceptDiscrete( ): Promise<any> {
+  console.log({yargs})
+
+    const {discreteOrderId} = yargs
 
     //let executeParams:any  = require('../data/craResponse.json')
 
@@ -51,7 +65,7 @@ export async function acceptDiscrete(): Promise<any> {
 
     if(!lenderPrivateKey) throw new Error('Missing lenderPrivateKey')
 
-    let wallet = new Wallet(lenderPrivateKey).connect(rpcProvider)
+    let lenderWallet = new Wallet(lenderPrivateKey).connect(rpcProvider)
  
  
 
@@ -62,21 +76,21 @@ export async function acceptDiscrete(): Promise<any> {
 
     let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
 
-
-    let bidId = executeConfig.bidId
   
     
-    let discreteOrderData = await bnplContractInstance.discreteOrders( bidId )
+    let discreteOrderData = await bnplContractInstance.discreteOrders( discreteOrderId )
 
+    let bidId = discreteOrderData.bidId
+  
     console.log({discreteOrderData})
 
 
     let craInputs = {
-      asset_contract_address: discreteOrderData.assetContractAddress,
-      token_id: discreteOrderData.assetTokenId,
-      quantity: discreteOrderData.quantity,
+      asset_contract_address: discreteOrderData.assetContractAddress.toString(),
+      token_id: discreteOrderData.assetTokenId.toString(),
+      quantity: discreteOrderData.quantity.toString(),
  
-      chain_id:tokenInputData.chainId,    
+      chain_id: executeConfig.chainId,    
       signature_version: signatureVersion
     }
 
@@ -93,9 +107,8 @@ export async function acceptDiscrete(): Promise<any> {
    if(!basicOrderParams.offererConduitKey){
      throw new Error('Missing offererConduitKey')
    }
-  
- 
-
+   
+   
     //Set price to 1 Gwei
     let gasPrice = utils.hexlify(8_000_000_000);
     //Set max gas limit to 4M
@@ -104,19 +117,20 @@ export async function acceptDiscrete(): Promise<any> {
 
     if((basicOrderParams.basicOrderType) > 22){
       throw new Error('invalid basic order type')
-    }
+    } 
 
+    console.log('accepting discrete order using account ',  lenderWallet.address)
+  
 
     let unsignedTx = await bnplContractInstance
     .populateTransaction
     .acceptDiscreteOrder(
-      bidId,
+      discreteOrderId,
       basicOrderParams , 
       { gasLimit, gasPrice} )
+ 
 
-  
-
-    let response = await wallet.sendTransaction(unsignedTx);
+    let response = await lenderWallet.sendTransaction(unsignedTx);
     console.log('response',response)
       
    

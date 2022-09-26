@@ -13,7 +13,7 @@ const lenderKey = process.env.LENDER_PRIVATE_KEY
 
 const executeConfig = {
   chainId: 5, //goerli 
-  marketplaceId: 3
+  marketplaceId: 2
 } 
 
 

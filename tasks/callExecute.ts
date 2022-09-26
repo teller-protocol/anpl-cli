@@ -9,12 +9,12 @@ require('dotenv').config()
 
 const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY
 
-
+const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
  
 
 const executeConfig = {
    
-  marketplaceId: 3
+  marketplaceId: 2
 
 } 
 
@@ -35,7 +35,7 @@ const tellerV2Config = {
 
 const bnplConfig = {
     address: contractsConfig.BNPLContract.address,
-    abi: require('../abi/BNPLMarket.json')
+    abi: require('../abi/BNPLMarketV3.json')
   }
 
 
@@ -80,10 +80,15 @@ export async function callExecute(): Promise<any> {
 
     if(!borrowerPrivateKey) throw new Error('Missing borrowerPrivateKey')
 
+
+    if(!lenderPrivateKey) throw new Error('Missing lenderPrivateKey')
+
     let borrowerWallet = new Wallet(borrowerPrivateKey).connect(rpcProvider)
+
+    let lenderWallet = new Wallet(lenderPrivateKey).connect(rpcProvider)
  
-  console.log(`calling execute using account ${borrowerWallet.address}`)
- 
+    console.log(`calling execute using account ${borrowerWallet.address}`)
+  
 
  
    const submitBidArgs = executeParams.submitBidArgs
@@ -92,19 +97,28 @@ export async function callExecute(): Promise<any> {
 
    let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
 
-   let lenderAddress = submitBidArgs.lender
+   let lenderAddress = lenderWallet.address
 
    let basicOrderParams:BasicOrderParams = executeParams.basicOrderParams
 
    if(!basicOrderParams.offererConduitKey){
      throw new Error('Missing offererConduitKey')
    }
+
  
+    let lenderHasApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
+    console.log('lender has approved BNPL as forwarder: ',lenderHasApproved, lenderAddress)
 
-    let isApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
-    console.log('lender has approved BNPL as forwarder: ',isApproved)
+    if(!lenderHasApproved) {
+        console.error(`ERROR: lender ${lenderAddress} has not approved bnpl as forwarder `)
+        return 
+    }
 
-    if(!isApproved) {
+
+    let borrowerHasApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
+    console.log('lender has approved BNPL as forwarder: ',borrowerHasApproved, lenderAddress)
+
+    if(!borrowerHasApproved) {
         console.error(`ERROR: lender ${lenderAddress} has not approved bnpl as forwarder `)
         return 
     }
@@ -115,7 +129,7 @@ export async function callExecute(): Promise<any> {
 
       //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
-        lender: submitBidArgs.lender,
+        lender: lenderAddress,
         totalPurchasePrice: submitBidArgs.totalPurchasePrice,
         principal: submitBidArgs.principal,
         downPayment: submitBidArgs.downPayment,       

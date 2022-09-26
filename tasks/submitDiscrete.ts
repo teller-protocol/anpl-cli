@@ -12,14 +12,7 @@ const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY
 
 
  
-
-
-const executeConfig = {
-  
-  marketplaceId: 3
-
-} 
-
+ 
 
 let tokenInputData = require('../data/tokenInputData.json')
  

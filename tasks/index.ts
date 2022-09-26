@@ -7,6 +7,7 @@ import { fetchCraResponse } from './fetchCraResponse'
 import { approveMarket } from './approveMarket'
 //import { matchOrder } from './matchOrder'
 
+const yargs = require('yargs').argv
  
 const taskMap: any = {
   
@@ -19,14 +20,16 @@ const taskMap: any = {
 }
 
 async function init(): Promise<void> {
-  const args = process.argv.slice(2)
 
-  await runTask(args)
+ 
+  const taskName = yargs['_'][0]
+
+  await runTask(taskName)
 }
  
 
-async function runTask(args: string[]): Promise<void> {
-  const taskName = args[0]
+async function runTask(taskName:string): Promise<void> {
+  
 
   const taskMethod = taskMap[taskName]
 
