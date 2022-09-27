@@ -88,9 +88,20 @@ export async function submitDiscrete(): Promise<any> {
 
 
 
+
+    const currentTimeSeconds = Math.floor(Date.now() / 1000)
+
+
+    const ONE_WEEK_IN_SECONDS = 60*60*24*7 
+
+    //Cra server might not give us the right signature expiration 
+    submitBidArgs.signatureExpiration =(
+      currentTimeSeconds + ONE_WEEK_IN_SECONDS
+    ).toString()
+
+    //must be zero 
     submitBidArgs.lender = ethers.constants.AddressZero
-
-
+   
 
     let basicOrderParams:BasicOrderParams = executeParams.basicOrderParams
 
@@ -98,9 +109,7 @@ export async function submitDiscrete(): Promise<any> {
       throw new Error('Missing offererConduitKey')
     }
  
- 
-
- 
+  
       //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
         lender: submitBidArgs.lender,
