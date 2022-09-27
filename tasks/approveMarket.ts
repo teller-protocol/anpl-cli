@@ -28,7 +28,7 @@ const tellerV2Config = {
 
 const bnplConfig = {
     address: contractsConfig.BNPLContract.address,
-    abi: require('../abi/BNPLMarket.json')
+    abi: require('../abi/BNPLMarketV3.json')
   }
 
 

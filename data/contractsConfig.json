@@ -27,6 +27,22 @@
     "tellerV2":{
         "address": "0x1D0eBC060f2897dAc14E482De600cea7896c0A3E"
     }
+  },
+
+  "mainnet":{
+
+    "BNPLContract":{
+        "address": "0x260C32eB38D1403bd51B83B5b7047812C70B7845" 
+    },
+    "seaport":{
+        "address": "0x00000000006c3852cbef3e08e8df289169ede581"
+    },
+    "cryptopunks":{
+      "address": "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB"
+    },
+    "tellerV2":{
+        "address": "0x00182FdB0B880eE24D428e3Cc39383717677C37e"
+    }
   }
 
 
