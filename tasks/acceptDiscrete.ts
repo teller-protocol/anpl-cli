@@ -63,6 +63,7 @@ export async function acceptDiscrete( ): Promise<any> {
     const {discreteOrderId} = yargs
 
     //let executeParams:any  = require('../data/craResponse.json')
+    //pushing params check
 
  
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
