@@ -53,7 +53,6 @@ export async function submitDiscrete(): Promise<any> {
 
     let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
 
-
     let craInputs = {
       asset_contract_address:tokenInputData.tokenAddress,
       token_id:tokenInputData.tokenId,

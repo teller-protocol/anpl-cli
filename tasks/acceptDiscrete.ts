@@ -26,7 +26,7 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
 const executeConfig = {
   
   marketplaceId: 2,
-  chainId: 5 
+  chainId: 1
  
 }
  
@@ -49,6 +49,12 @@ const bnplConfig = {
     abi: require('../abi/BNPLMarketV3.json')
   }
 
+
+  /*
+  yarn task acceptDiscrete -- --discreteOrderId=1
+
+  
+  */
 
 
 export async function acceptDiscrete( ): Promise<any> {
@@ -77,6 +83,7 @@ export async function acceptDiscrete( ): Promise<any> {
     let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
 
   
+
     
     let discreteOrderData = await bnplContractInstance.discreteOrders( discreteOrderId )
 
@@ -121,7 +128,7 @@ export async function acceptDiscrete( ): Promise<any> {
 
     console.log('accepting discrete order using account ',  lenderWallet.address)
   
-
+    
     let unsignedTx = await bnplContractInstance
     .populateTransaction
     .acceptDiscreteOrder(
