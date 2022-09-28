@@ -47,11 +47,7 @@ const yargs = require('yargs')
 })
 .argv
  
- 
-
     const {bnplMarketAddress,punksAddress} = yargs
-
-    console.log([bnplMarketAddress,punksAddress])
 
     let response = await getTokensToMigrate( bnplMarketAddress, punksAddress )
 
