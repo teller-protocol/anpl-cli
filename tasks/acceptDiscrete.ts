@@ -25,7 +25,7 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
 
 const executeConfig = {
   
-  marketplaceId: 2,
+  marketplaceId: 1,
   chainId: 1
  
 }
@@ -63,6 +63,7 @@ export async function acceptDiscrete( ): Promise<any> {
     const {discreteOrderId} = yargs
 
     //let executeParams:any  = require('../data/craResponse.json')
+    //pushing params check
 
  
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
