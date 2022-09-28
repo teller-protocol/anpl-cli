@@ -25,7 +25,7 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
 
 const executeConfig = {
   
-  marketplaceId: 2,
+  marketplaceId: 1,
   chainId: 1
  
 }
