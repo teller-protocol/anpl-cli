@@ -62,10 +62,10 @@ export function buildExecuteParams(inputData:CraResponse ): ExecuteParams {
       console.log("could not read contract version")
     } 
 
-    if(contractVersion == "3.0"){
-      return 3
+    if(contractVersion == "1.0"){
+      return 2
     }
 
-    return 2 
+    return 3
 
   }
