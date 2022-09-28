@@ -58,7 +58,7 @@ const bnplConfig = {
 
 
 export async function acceptDiscrete( ): Promise<any> {
-  console.log({yargs})
+   
 
     const {discreteOrderId} = yargs
 

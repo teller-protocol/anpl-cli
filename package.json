@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/node-fetch": "^2.6.1",
+    "alchemy-sdk": "^2.0.5-rc1",
     "argv": "^0.0.2",
     "dotenv": "^16.0.1",
     "moment": "^2.29.3",
