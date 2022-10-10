@@ -1,4 +1,4 @@
-import { AssertionResponse } from 'degen-route-loader'
+ 
 import {
   bufferToHex,
   ecrecover,
@@ -12,14 +12,16 @@ import {
   BasicOrderParams,
   DomainData,
   SubmitBidArgs,
-} from 'server/interfaces/types'
+} from './types'
 
 require('dotenv').config()
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY!
+ 
 
-if (!PRIVATE_KEY) {
-  throw new Error('Missing PRIVATE_KEY')
+interface AssertionResponse {
+  success:boolean,
+  data?:any,
+  error?:any
 }
  
 

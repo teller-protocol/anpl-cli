@@ -6,12 +6,13 @@ import { acceptDiscrete } from './acceptDiscrete'
 import { fetchCraResponse } from './fetchCraResponse'
 import { approveMarket } from './approveMarket'
 import {getNFTsOwned} from './getNFTsOwned'
+import {callExecuteWithOffchain} from './callExecuteWithOffchain'
 //import { matchOrder } from './matchOrder'
 
 const yargs = require('yargs').argv
  
 const taskMap: any = {
-  
+  callExecuteWithOffchain,
   callExecute,
   submitDiscrete,
   acceptDiscrete,

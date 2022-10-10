@@ -1,4 +1,5 @@
 
+import { toChecksumAddress } from 'ethereumjs-util'
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
 import { axiosPostRequest } from '../lib/axios-helper'
@@ -23,7 +24,7 @@ let tokenInputData = require('../data/tokenInputData.json')
 let networkName = networkNameFromChainId( tokenInputData.chainId  )
 let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
-
+const ProxyAdminInterface = require('../abi/OpenZeppelinTransparentProxyAdmin.abi.json')
 
 const rpcURI = getRpcUrlFromNetworkName(networkName) 
 
@@ -40,11 +41,9 @@ const bnplConfig = {
 
 
 
-export async function callExecute(): Promise<any> {
+export async function callExecuteWithOffchain(): Promise<any> {
 
-
-    
- 
+  
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -107,7 +106,13 @@ export async function callExecute(): Promise<any> {
 
     const chainId = tokenInputData.chainId
 
-    const proxyAdminContract = new Contract( networkConfig.proxyAdminAddress, ProxyAdminInterface, web3Provider )
+
+
+    // find implementation address via proxy admin 
+
+    let bnplContractProxyAddress = contractsConfig.BNPLContract.address
+
+    const proxyAdminContract = new Contract( contractsConfig.proxyAdmin.address, ProxyAdminInterface, rpcProvider )
     let implementationContractAddress = await proxyAdminContract.getProxyImplementation( bnplContractProxyAddress )
 
     implementationContractAddress = toChecksumAddress(implementationContractAddress)
@@ -115,6 +120,9 @@ export async function callExecute(): Promise<any> {
     if(typeof(implementationContractAddress) == 'undefined'){
       return {success:false, error:"Could not get implementation address"}
     }
+
+
+
 
 
       let lenderSignature = await generateBNPLOrderSignature( 
@@ -194,7 +202,7 @@ export async function callExecute(): Promise<any> {
       throw new Error('invalid basic order type')
     }
  
-    let unsignedTx = await bnplContractInstance
+   /* let unsignedTx = await bnplContractInstance
     .populateTransaction
     .executeWithOffchainSignatures(
       formattedSubmitBidArgs, 
@@ -207,7 +215,7 @@ export async function callExecute(): Promise<any> {
   
 
     let response = await borrowerWallet.sendTransaction(unsignedTx);
-    console.log('response',response)
+    console.log('response',response)*/
       
    
     return true 
