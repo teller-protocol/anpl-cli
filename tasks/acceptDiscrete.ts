@@ -118,9 +118,9 @@ export async function acceptDiscrete( ): Promise<any> {
    
    
     //Set price to 1 Gwei
-    let gasPrice = utils.hexlify(8_000_000_000);
+    let gasPrice = utils.hexlify(14_000_000_000);
     //Set max gas limit to 4M
-    var gasLimit = utils.hexlify(10_000_000);  
+    // var gasLimit = utils.hexlify(10_000_000);  
 
 
     if((basicOrderParams.basicOrderType) > 22){
@@ -135,7 +135,8 @@ export async function acceptDiscrete( ): Promise<any> {
     .acceptDiscreteOrder(
       discreteOrderId,
       basicOrderParams , 
-      { gasLimit, gasPrice} )
+      {gasPrice} 
+      )
  
 
     let response = await lenderWallet.sendTransaction(unsignedTx);
