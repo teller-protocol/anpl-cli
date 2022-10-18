@@ -10,7 +10,10 @@
     },
     "tellerV2":{
         "address": "0x21d3d541937de52ac5e4af6254d0d2134d9b7c9e"
-    }
+    },
+    "proxyAdmin":{
+      "address": " "
+   }
   },
 
   "goerli":{
@@ -26,7 +29,10 @@
     },
     "tellerV2":{
         "address": "0x1D0eBC060f2897dAc14E482De600cea7896c0A3E"
-    }
+    },
+    "proxyAdmin":{
+      "address": "0xD27FD721635de713dA155260F4Ca69b717B76Ef9"
+   }
   },
 
   "mainnet":{
@@ -42,7 +48,10 @@
     },
     "tellerV2":{
         "address": "0x00182FdB0B880eE24D428e3Cc39383717677C37e"
-    }
+    },
+    "proxyAdmin":{
+      "address": "0xcCfFa4e4cBE27D92f926E7B2e396a772Ddf0F2B2"
+   }
   }
 
 

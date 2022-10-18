@@ -1,15 +1,16 @@
 import { parseFeeMethod, parseHowToCall, parseMetadata, parseSaleKind, WyvernAtomicMatchParameters } from "./opensea-helper"
 
  
-import {BigNumber, Contract, ethers,Wallet} from 'ethers'
+import {BigNumber, Contract, ethers,Signer,Wallet} from 'ethers'
 
 import moment from 'moment'
 
 import { NULL_BLOCK_HASH } from 'opensea-js/lib/constants'
 
 import { OpenseaHelper, SignedOrder, UnhashedOrder } from '../lib/opensea-helper'
-import { SubmitBidArgs, ContractsConfig, CraResponse, ExecuteParams } from "./types"
+import { SubmitBidArgs, ContractsConfig, CraResponse, ExecuteParams, BasicOrderParams } from "./types"
 import { axiosPostRequest } from "./axios-helper"
+import { craSign } from "./cra-signer"
  
   
 require('dotenv').config() 
@@ -69,3 +70,30 @@ export function buildExecuteParams(inputData:CraResponse ): ExecuteParams {
     return 3
 
   }
+
+  export async function generateBNPLOrderSignature( 
+    submitBidArgs:SubmitBidArgs,
+    basicOrderParams:BasicOrderParams,
+    wallet: Wallet,
+    chainId: number,
+    implementationContractAddress: string
+    ){
+
+      let signatureVersion = 3
+
+      let signatureResponse = await craSign( 
+        submitBidArgs, 
+        basicOrderParams, 
+        chainId, 
+        signatureVersion, 
+        implementationContractAddress, 
+        wallet, 
+        true)
+
+
+        if(signatureResponse.success){
+          return signatureResponse.data 
+        }
+
+        return undefined 
+    }

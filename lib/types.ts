@@ -1,5 +1,14 @@
 import { BigNumber } from "ethers";
 
+
+export interface DomainData {
+  name: string
+  version: string
+  chainId: number
+  verifyingContract: string
+}
+
+
 export interface SubmitBidArgs {
   lender: string
   totalPurchasePrice: string
