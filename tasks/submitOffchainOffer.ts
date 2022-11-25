@@ -4,11 +4,13 @@ import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 
 import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
  
-import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
+import { readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 
-import { BasicOrderParams, DomainData, SubmitBidArgs } from '../lib/types'
+import {  DomainData, SubmitBidArgs } from '../lib/types'
 
 import axios from 'axios'
+import { recoverSignerOfOffchainOffer, signOffchainOffer } from '@clarity-credit/anpl-sdk'
+import { BasicOrderParams } from '@clarity-credit/anpl-sdk/types/types'
 
 require('dotenv').config()
 
@@ -61,14 +63,7 @@ export async function submitOffchainOffer(): Promise<any> {
 
     let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
 
-    let craInputs = {
-      asset_contract_address:tokenInputData.tokenAddress,
-      token_id:tokenInputData.tokenId,
-      quantity: tokenInputData.tokenQuantity,
- 
-      chain_id:tokenInputData.chainId,    
-      signature_version: signatureVersion
-    }
+    
 
    // let craResponse = await performCraRequest( craInputs  )
     let craResponse = {success:true, data: craResponseSample , error:'none'}
@@ -113,7 +108,7 @@ export async function submitOffchainOffer(): Promise<any> {
       throw new Error('Missing offererConduitKey')
     }
 
-    const chainId = tokenInputData.chainId
+    const chainId = 1 // tokenInputData.chainId
 
 
 
@@ -138,48 +133,10 @@ export async function submitOffchainOffer(): Promise<any> {
       verifyingContract: implementationContractAddress
     }
 
-
-/*
-
-      let lenderSignature = await generateBNPLOrderSignature( 
-        submitBidArgs,
-        basicOrderParams,   
-        lenderWallet,
-        chainId,
-        implementationContractAddress
-       ) */
-
-
-
-/*
  
-    let lenderHasApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
-    console.log('lender has approved BNPL as forwarder: ',lenderHasApproved, lenderAddress)
-
-    if(!lenderHasApproved) {
-        console.error(`ERROR: lender ${lenderAddress} has not approved bnpl as forwarder `)
-        return 
-    } 
-
-
-    let borrowerHasApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
-    console.log('lender has approved BNPL as forwarder: ',borrowerHasApproved, lenderAddress)
-
-    if(!borrowerHasApproved) {
-        console.error(`ERROR: lender ${lenderAddress} has not approved bnpl as forwarder `)
-        return 
-    }
-
- */
  
 
-    let borrowerSignature = await generateBNPLOrderSignature( 
-      submitBidArgs,
-      basicOrderParams,   
-      borrowerWallet,
-      chainId,
-      implementationContractAddress
-     ) 
+
 
 
       //fix it for now to remove referral and sig expir
@@ -195,11 +152,19 @@ export async function submitOffchainOffer(): Promise<any> {
         metadataURI: submitBidArgs.metadataURI ,
       }
 
+      let borrowerSignature = await signOffchainOffer({
+        submitBidArgs:formattedSubmitBidArgs,
+        basicOrderParams,   
+        domainData,
+        //@ts-ignore
+        wallet: borrowerWallet,
+         }) 
 
     console.log('passing in params',
       formattedSubmitBidArgs, 
       basicOrderParams ,
-      borrowerSignature
+      borrowerSignature,
+      domainData
     )
  
    // basicOrderParams.offererConduitKey = "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000"
@@ -207,12 +172,7 @@ export async function submitOffchainOffer(): Promise<any> {
 
     //this address needs to approve the forwarder on tellerv2
   //  lenderAddress =  "0xF4dAb24C52b51cB69Ab62cDE672D3c9Df0B39681"
-
-    //Set price to 1 Gwei
-    let gasPrice = utils.hexlify(8_000_000_000);
-    //Set max gas limit to 4M
-    var gasLimit = utils.hexlify(10_000_000);  
-
+  
 
     if((basicOrderParams.basicOrderType) > 22){
       throw new Error('invalid basic order type')
@@ -228,12 +188,16 @@ export async function submitOffchainOffer(): Promise<any> {
     }
 
 
-
+      const recoveredSigner = recoverSignerOfOffchainOffer(
+      formattedSubmitBidArgs,
+      basicOrderParams,
+      domainData,
+      borrowerSignature
+    );
+ 
 
     let postResponse = await axios.post( url, data )
-
-    console.log({postResponse})
-
+ 
   
    
     return true 
