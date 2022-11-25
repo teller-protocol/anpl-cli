@@ -6,7 +6,7 @@ import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-hel
  
 import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 
-import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
+import { BasicOrderParams, DomainData, SubmitBidArgs } from '../lib/types'
 
 import axios from 'axios'
 
@@ -101,7 +101,7 @@ export async function submitOffchainOffer(): Promise<any> {
 
 
     submitBidArgs.borrower = borrowerWallet.address
-    submitBidArgs.lender = borrowerWallet.address
+    submitBidArgs.lender = undefined   // borrowerWallet.address
 
     let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
 
@@ -131,6 +131,13 @@ export async function submitOffchainOffer(): Promise<any> {
     }
 
 
+    let domainData:DomainData = {
+      name: "Teller_BNPL_Market",
+      version: "3.2",
+      chainId,
+      verifyingContract: implementationContractAddress
+    }
+
 
 /*
 
@@ -142,13 +149,6 @@ export async function submitOffchainOffer(): Promise<any> {
         implementationContractAddress
        ) */
 
-       let borrowerSignature = await generateBNPLOrderSignature( 
-        submitBidArgs,
-        basicOrderParams,   
-        borrowerWallet,
-        chainId,
-        implementationContractAddress
-       ) 
 
 
 /*
@@ -173,10 +173,18 @@ export async function submitOffchainOffer(): Promise<any> {
  */
  
 
+    let borrowerSignature = await generateBNPLOrderSignature( 
+      submitBidArgs,
+      basicOrderParams,   
+      borrowerWallet,
+      chainId,
+      implementationContractAddress
+     ) 
+
 
       //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
-        lender: lenderAddress,
+        borrower: borrowerWallet.address,
         totalPurchasePrice: submitBidArgs.totalPurchasePrice,
         principal: submitBidArgs.principal,
         downPayment: submitBidArgs.downPayment,       
@@ -215,8 +223,11 @@ export async function submitOffchainOffer(): Promise<any> {
     let data = {
       submitBidArgs: formattedSubmitBidArgs,
       basicOrderParams,
+      domainData,
       borrowerSignature
     }
+
+
 
 
     let postResponse = await axios.post( url, data )
