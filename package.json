@@ -15,6 +15,7 @@
     "@types/node-fetch": "^2.6.1",
     "alchemy-sdk": "^2.0.5-rc1",
     "argv": "^0.0.2",
+    "axios": "^1.2.0",
     "dotenv": "^16.0.1",
     "moment": "^2.29.3",
     "opensea-js": "^3.0.4",

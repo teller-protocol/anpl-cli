@@ -8,11 +8,15 @@ import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, pe
 
 import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
 
+import axios from 'axios'
+
 require('dotenv').config()
 
 const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY
 
 const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
+
+
  
 
 const executeConfig = {
@@ -46,9 +50,8 @@ const bnplConfig = {
 
 
 
-export async function callExecuteWithOffchain(): Promise<any> {
+export async function submitOffchainOffer(): Promise<any> {
 
-  
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -69,8 +72,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
 
    // let craResponse = await performCraRequest( craInputs  )
     let craResponse = {success:true, data: craResponseSample , error:'none'}
-
-    console.log('meep', craResponse)
+ 
     
 
     if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
@@ -130,7 +132,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
 
 
 
-
+/*
 
       let lenderSignature = await generateBNPLOrderSignature( 
         submitBidArgs,
@@ -138,7 +140,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
         lenderWallet,
         chainId,
         implementationContractAddress
-       ) 
+       ) */
 
        let borrowerSignature = await generateBNPLOrderSignature( 
         submitBidArgs,
@@ -149,7 +151,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
        ) 
 
 
-
+/*
  
     let lenderHasApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
     console.log('lender has approved BNPL as forwarder: ',lenderHasApproved, lenderAddress)
@@ -157,7 +159,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
     if(!lenderHasApproved) {
         console.error(`ERROR: lender ${lenderAddress} has not approved bnpl as forwarder `)
         return 
-    }
+    } 
 
 
     let borrowerHasApproved = await tellerV2Instance.hasApprovedMarketForwarder(executeConfig.marketplaceId, bnplContractInstance.address, lenderAddress)
@@ -168,7 +170,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
         return 
     }
 
- 
+ */
  
 
 
@@ -189,8 +191,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
     console.log('passing in params',
       formattedSubmitBidArgs, 
       basicOrderParams ,
-      borrowerSignature,
-      lenderSignature
+      borrowerSignature
     )
  
    // basicOrderParams.offererConduitKey = "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000"
@@ -208,22 +209,21 @@ export async function callExecuteWithOffchain(): Promise<any> {
     if((basicOrderParams.basicOrderType) > 22){
       throw new Error('invalid basic order type')
     }
- 
-   /* let unsignedTx = await bnplContractInstance
-    .populateTransaction
-    .executeWithOffchainSignatures(
-      formattedSubmitBidArgs, 
-      basicOrderParams, 
-      borrowerSignature,
-      lenderSignature
-      
-      , {value, gasLimit, gasPrice} )
+
+
+    let url = "http://localhost:8000/v2/offers"
+    let data = {
+      submitBidArgs: formattedSubmitBidArgs,
+      basicOrderParams,
+      borrowerSignature
+    }
+
+
+    let postResponse = await axios.post( url, data )
+
+    console.log({postResponse})
 
   
-
-    let response = await borrowerWallet.sendTransaction(unsignedTx);
-    console.log('response',response)*/
-      
    
     return true 
   }

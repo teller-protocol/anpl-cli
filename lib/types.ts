@@ -10,6 +10,7 @@ export interface DomainData {
 
 
 export interface SubmitBidArgs {
+  borrower?:string
   lender: string
   totalPurchasePrice: string
   principal: string
