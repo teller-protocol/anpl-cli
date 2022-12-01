@@ -180,15 +180,20 @@ export async function submitOffchainOffer(): Promise<any> {
 
 
     let url = "http://localhost:8000/v2/offers"
-    let data = {
+    //let url = "https://development.api.apenowpaylater.com/v2/offers"
+
+    let offer = {
       submitBidArgs: formattedSubmitBidArgs,
       basicOrderParams,
       domainData,
       borrowerSignature
     }
+ 
+    let data = {offers:[offer]}
 
 
-      const recoveredSigner = recoverSignerOfOffchainOffer(
+
+    const recoveredSigner = recoverSignerOfOffchainOffer(
       formattedSubmitBidArgs,
       basicOrderParams,
       domainData,
@@ -196,8 +201,10 @@ export async function submitOffchainOffer(): Promise<any> {
     );
  
 
+
     let postResponse = await axios.post( url, data )
- 
+      
+    console.log({postResponse})
   
    
     return true 
