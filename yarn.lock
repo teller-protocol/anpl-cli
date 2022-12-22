@@ -113,10 +113,10 @@
     ethers "~4.0.4"
     lodash "^4.17.11"
 
-"@clarity-credit/anpl-sdk@^0.1.3":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@clarity-credit/anpl-sdk/-/anpl-sdk-0.1.8.tgz#ddc65305aac7bb6d351025796b27b84e3d5aea67"
-  integrity sha512-WIQEkN31RrU/QEmRgrGosjEyhdQ2TfTbk6erC8hfw58OTPvXjBla4snzs1h9NtBLu1uhH0IH4huRCRwGpYBkIw==
+"@clarity-credit/anpl-sdk@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@clarity-credit/anpl-sdk/-/anpl-sdk-0.3.4.tgz#32ece4539be4d57cdceecd08e85177ddf00b67c3"
+  integrity sha512-rJSxqOkUV03SADtV7JAZgiwmq1+PAQraFrKTVt65hZDe+LXj5ZmCW+SUkxDZpqTgMZQ7a5zRXFAj5pqWsun1aQ==
   dependencies:
     ethers "^5.7.1"
 

@@ -134,10 +134,7 @@ export async function submitOffchainOffer(): Promise<any> {
     }
 
  
- 
-
-
-
+  
 
       //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
@@ -159,20 +156,7 @@ export async function submitOffchainOffer(): Promise<any> {
         //@ts-ignore
         wallet: borrowerWallet,
          }) 
-
-    console.log('passing in params',
-      formattedSubmitBidArgs, 
-      basicOrderParams ,
-      borrowerSignature,
-      domainData
-    )
  
-   // basicOrderParams.offererConduitKey = "0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000"
-  //basicOrderParams.signature= "0x5c8a6fd29db37f9b53fcf1cce21c62e68ca0684c28e0320cb27e8568210baf37644e1258430b698cfe533334621ddd82a12e46dd184823ab318b8ee6ff0fa2dd1c"
-
-    //this address needs to approve the forwarder on tellerv2
-  //  lenderAddress =  "0xF4dAb24C52b51cB69Ab62cDE672D3c9Df0B39681"
-  
 
     if((basicOrderParams.basicOrderType) > 22){
       throw new Error('invalid basic order type')
