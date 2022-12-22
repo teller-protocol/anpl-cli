@@ -7,6 +7,7 @@ import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-hel
 import { buildExecuteParams, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper';
 
 import { axiosGetRequest } from '../lib/axios-helper';
+import { SubmitBidArgs } from '../lib/types';
 
 
 let tokenInputData = require('../data/tokenInputData.json')
@@ -52,9 +53,16 @@ export async function fetchAppServerResponse(): Promise<any> {
 
   const basicOrderParams = resultData.basicOrderParams
 
-  const submitBidArgs = {
-
-
+  const submitBidArgs:SubmitBidArgs = {
+    totalPurchasePrice: utils.formatUnits("7.1209", 'ether'),
+    principal: '',
+    downPayment: '',
+    duration: '',
+    signatureExpiration: '',
+    interestRate: '',
+    referralAddress: '',
+    metadataURI: 'ipfs://',
+    marketId: '2'
   }
 
   const borrowerSignature = ""
@@ -62,7 +70,7 @@ export async function fetchAppServerResponse(): Promise<any> {
   const outputData = {
     basicOrderParams,
     submitBidArgs,
-    borrowerSignature
+    borrowerSignature //maybe this isnt here ? 
   } 
 
 
