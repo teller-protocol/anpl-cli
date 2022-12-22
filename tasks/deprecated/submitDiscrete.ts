@@ -40,9 +40,7 @@ const bnplConfig = {
 
 export async function submitDiscrete(): Promise<any> {
 
-    //let executeParams:any  = require('../data/craResponse.json')
-
- 
+    const marketId = 2;
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -80,13 +78,7 @@ export async function submitDiscrete(): Promise<any> {
     console.log(`calling execute using account ${wallet.address}`)
  
     const submitBidArgs = executeParams.submitBidArgs
-
-   // let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
-
-    ///let lenderAddress = submitBidArgs.lender
-
-
-
+ 
 
     const currentTimeSeconds = Math.floor(Date.now() / 1000)
 
@@ -120,6 +112,7 @@ export async function submitDiscrete(): Promise<any> {
         interestRate:submitBidArgs.interestRate,
         referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        marketId
       }
 
 

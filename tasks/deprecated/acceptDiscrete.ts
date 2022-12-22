@@ -1,8 +1,8 @@
 
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
-import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
-import { calculateTotalPrice, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
-import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
+import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../../lib/app-helper'
+import { calculateTotalPrice, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../../lib/bnpl-helper'
+import { BasicOrderParams, SubmitBidArgs } from '../../lib/types'
 
 require('dotenv').config()
 
@@ -102,7 +102,9 @@ export async function acceptDiscrete( ): Promise<any> {
       signature_version: signatureVersion
     }
 
-    let craResponse = await performCraRequest( craInputs  )
+
+    const craServerUrl = "" 
+    let craResponse = await performCraRequest( craServerUrl, craInputs  )
     
 
     if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))

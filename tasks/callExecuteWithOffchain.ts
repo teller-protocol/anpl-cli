@@ -4,7 +4,7 @@ import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 
 import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
  
-import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
+import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature,  readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 
 import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
 
@@ -183,6 +183,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
         interestRate:submitBidArgs.interestRate,
         referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        marketId: executeConfig.marketplaceId.toString()
       }
 
 

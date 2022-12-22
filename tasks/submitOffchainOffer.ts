@@ -9,6 +9,7 @@ import { readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 import {  DomainData, SubmitBidArgs } from '../lib/types'
 
 import axios from 'axios'
+
 import { recoverSignerOfOffchainOffer, signOffchainOffer } from '@clarity-credit/anpl-sdk'
 import { BasicOrderParams } from '@clarity-credit/anpl-sdk/types/types'
 
@@ -54,6 +55,8 @@ const bnplConfig = {
 
 export async function submitOffchainOffer(): Promise<any> {
 
+
+    const marketId = "2"
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -147,6 +150,7 @@ export async function submitOffchainOffer(): Promise<any> {
         interestRate:submitBidArgs.interestRate,
         referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        marketId
       }
 
       let borrowerSignature = await signOffchainOffer({

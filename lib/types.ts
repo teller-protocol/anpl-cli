@@ -20,6 +20,7 @@ export interface SubmitBidArgs {
   interestRate: string
   referralAddress: string
   metadataURI: string 
+  marketId: string
 }
  
 

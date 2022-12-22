@@ -2,7 +2,7 @@
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
 import { axiosPostRequest } from '../lib/axios-helper'
-import { buildExecuteParams, calculateTotalPrice, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
+import { buildExecuteParams, calculateTotalPrice, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
@@ -44,7 +44,7 @@ export async function callExecute(): Promise<any> {
 
 
     
- 
+    const marketId = "2";
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -63,7 +63,10 @@ export async function callExecute(): Promise<any> {
       signature_version: signatureVersion
     }
 
-    let craResponse = await performCraRequest( craInputs  )
+    const craServerUrl = "https://api.nftnow.one/api/getOrderDetails"
+
+
+    let craResponse = await axiosPostRequest( craServerUrl, craInputs  )
     
 
     if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
@@ -138,6 +141,7 @@ export async function callExecute(): Promise<any> {
         interestRate:submitBidArgs.interestRate,
         referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        marketId
       }
 
 

@@ -16,11 +16,8 @@ import { craSign } from "./cra-signer"
 require('dotenv').config() 
 
 
-const CraServerURL = "https://api.nftnow.one/api/getOrderDetails"
-
-export function performCraRequest( craInputs:any ){
-  return axiosPostRequest( CraServerURL, craInputs  )
-}
+ 
+ 
 
 export function calculateTotalPrice( basicOrderParams: any ): BigNumber {
   let amount = BigNumber.from(basicOrderParams.considerationAmount) 
