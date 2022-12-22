@@ -37,28 +37,34 @@ export async function fetchAppServerResponse(): Promise<any> {
   
  // let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
   
-  const craServerUrl = `https://staging.api.apenowpaylater.com/v2/asset/listings?slugOrAddress=${tokenInputData.tokenAddress}&tokenId=${tokenInputData.tokenId}`
+  const appServerUrl = `https://staging.api.apenowpaylater.com/v2/asset/listings?slugOrAddress=${tokenInputData.tokenAddress}&tokenId=${tokenInputData.tokenId}`
 
-  let craResponse = await axiosGetRequest( craServerUrl , {} , { 'Accept-Encoding': 'application/json',})
+  let appResponse = await axiosGetRequest( appServerUrl , {} , { 'Accept-Encoding': 'application/json',})
 
-  if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
+  if(!appResponse.success || !appResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
   
-
-  ////this data will have the basicOrderParams inside 
+  ////this data will have the basicOrderParams inside  but not submitBidArgs
  
-  let outputData =   craResponse.data.result
+  let resultData = appResponse.data.result
  
-  console.log('output ', JSON.stringify(outputData) )
+  console.log('output ', JSON.stringify(resultData) )
 
 
-  const basicOrderParams = outputData.basicOrderParams
+  const basicOrderParams = resultData.basicOrderParams
 
   const submitBidArgs = {
 
 
-
-
   }
+
+  const borrowerSignature = ""
+
+  const outputData = {
+    basicOrderParams,
+    submitBidArgs,
+    borrowerSignature
+  } 
+
 
 
   //generate the signature(s) -- use them for contract tests -- 
