@@ -39,19 +39,32 @@ export async function fetchAppServerResponse(): Promise<any> {
   
   const craServerUrl = `https://staging.api.apenowpaylater.com/v2/asset/listings?slugOrAddress=${tokenInputData.tokenAddress}&tokenId=${tokenInputData.tokenId}`
 
-  let craResponse = await axiosGetRequest( craServerUrl , {} , {'content-type':"application/json"})
+  let craResponse = await axiosGetRequest( craServerUrl , {} , { 'Accept-Encoding': 'application/json',})
 
   if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
   
 
   ////this data will have the basicOrderParams inside 
-
-  console.log('craResponse',craResponse)
-
-  let outputData =   craResponse.data  
-
-  console.log('output1 ' )
+ 
+  let outputData =   craResponse.data.result
+ 
   console.log('output ', JSON.stringify(outputData) )
+
+
+  const basicOrderParams = outputData.basicOrderParams
+
+  const submitBidArgs = {
+
+
+
+
+  }
+
+
+  //generate the signature(s) -- use them for contract tests -- 
+
+
+
 
   /*
   try {
