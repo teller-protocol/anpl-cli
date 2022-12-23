@@ -26,20 +26,30 @@ export async function generateMockSignature(): Promise<any> {
 
 
   const chainId = 1;
-  const implementationContractAddress = ""
+  const implementationContractAddress = "0x5F96A3cc1b95a3F521f2CB89d20F06D2F48c2477"
 
   
 
   let borrowerWallet = Wallet.createRandom() 
   let lenderWallet = Wallet.createRandom() 
 
+  /*
+
+      _submitBidArgs,
+      _basicOrderParameters.offerToken, // token contract address
+      _basicOrderParameters.offerIdentifier, // token ID
+      _basicOrderParameters.offerAmount, // quantity
+      _submitBidArgs.totalPurchasePrice, // base price
+      paymentToken
+      
+  */
 
   const submitBidArgs:SubmitBidArgs = {
     borrower: borrowerWallet.address,
     lender: lenderWallet.address,
-    totalPurchasePrice: '100000000000000000',
+    totalPurchasePrice: '1000000000000000',
     principal: '526592943654555',
-    downPayment: '50000000000000000',
+    downPayment: '500000000000000',
     duration: '7776000',
     interestRate: '1000',
     signatureExpiration: '1659383735',    
@@ -63,13 +73,13 @@ export async function generateMockSignature(): Promise<any> {
   ]
 
   const basicOrderParams:BasicOrderParams =  {
-    considerationToken: '0x0000000000000000000000000000000000000000',
+    considerationToken: '0x0000000000000000000000000000000000000000',  //eth - payment token 
     considerationIdentifier: BigNumber.from(0),
     considerationAmount: BigNumber.from(1750000000000000),
     offerer: '0xddcf8980a9e133f4c545669b4ead5e9c718d0100',
     zone: '0x004C00500000aD104D7DBd00e3ae0A5C00560C00',
-    offerToken: '0xA604060890923Ff400e8c6f5290461A83AEDACec',
-    offerIdentifier: BigNumber.from('100327825887324101502874790519831669035197812494342104610007128306560668794881'),
+    offerToken: '0x51546677935B48c598Ab1a2D259229C5Edb7Ff9c',
+    offerIdentifier: BigNumber.from('0'),
     offerAmount: '1',
     basicOrderType: 7,
     startTime: BigNumber.from(1659551731),
@@ -91,6 +101,7 @@ export async function generateMockSignature(): Promise<any> {
     verifyingContract: implementationContractAddress
   }
 
+  
 
   //a method from the sdk 
   const borrowerSignature = await signOffchainOffer({
@@ -110,10 +121,15 @@ export async function generateMockSignature(): Promise<any> {
   }
 
 
+ 
+
+  const TypedDataEncoder = utils._TypedDataEncoder;
+
+  const hashDomain = TypedDataEncoder.hashDomain(domainData);
+
+
   console.log({outputData})
-
-
-
+  console.log({hashDomain})
   //generate the signature(s) -- use them for contract tests -- 
   // use this for _recoverSignature_test() on BNPLMarket_Test.sol 
 
