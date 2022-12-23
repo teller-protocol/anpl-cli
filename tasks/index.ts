@@ -4,6 +4,7 @@ import { callExecute } from './callExecute'
 import { fetchAppServerResponse } from './fetchAppServerResponse'
 import { fetchCraResponse } from './fetchCraResponse'
 import { approveMarket } from './approveMarket'
+import {generateMockSignature} from './generateMockSignature'
 import {getNFTsOwned} from './getNFTsOwned'
 import {callExecuteWithOffchain} from './callExecuteWithOffchain'
 import {submitOffchainOffer} from './submitOffchainOffer' 
@@ -16,6 +17,7 @@ const taskMap: any = {
   fetchAppServerResponse, 
   fetchCraResponse,
   approveMarket,
+  generateMockSignature,
   getNFTsOwned,
   submitOffchainOffer
 //  matchOrder

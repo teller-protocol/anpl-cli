@@ -42,7 +42,7 @@ export async function fetchAppServerResponse(): Promise<any> {
 
   let appResponse = await axiosGetRequest( appServerUrl , {} , { 'Accept-Encoding': 'application/json',})
 
-  if(!appResponse.success || !appResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
+  if(!appResponse.success || !appResponse.data) throw new Error('app error '.concat(appResponse.error.toString()))
   
   ////this data will have the basicOrderParams inside  but not submitBidArgs
  
