@@ -6,6 +6,7 @@ import { acceptDiscrete } from './acceptDiscrete'
 import { fetchCraResponse } from './fetchCraResponse'
 import { approveMarket } from './approveMarket'
 import {getNFTsOwned} from './getNFTsOwned'
+import {tenderlyAddBalance} from './tenderlyAddBalance'
 import {callExecuteWithOffchain} from './callExecuteWithOffchain'
 //import { matchOrder } from './matchOrder'
 
@@ -18,7 +19,8 @@ const taskMap: any = {
   acceptDiscrete,
   fetchCraResponse,
   approveMarket,
-  getNFTsOwned
+  getNFTsOwned,
+  tenderlyAddBalance
 //  matchOrder
 }
 
