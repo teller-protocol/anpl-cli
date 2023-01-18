@@ -138,7 +138,10 @@ export async function executeReservoirOrder(): Promise<any> {
 
 
 
-    const totalPurchasePrice = basicOrderParams.considerationAmount
+
+    const considerationAmount = BigNumber.from( basicOrderParams.considerationAmount )
+    const additionalAmount = BigNumber.from( basicOrderParams.additionalRecipients[0].amount)
+    const totalPurchasePrice = considerationAmount.add(additionalAmount).toString()
 
     const downPayment = BigNumber.from(totalPurchasePrice).div(2).toString()
 
@@ -173,7 +176,8 @@ export async function executeReservoirOrder(): Promise<any> {
         marketId
     }
 
-    const implementationContractAddress = "0x3bf7F0D0FA47F2101f67bd530F1bE7aD05D90321"
+    const implementationContractAddress = bnplConfig.address
+    //"0x3bf7F0D0FA47F2101f67bd530F1bE7aD05D90321"
 
     const domainData:DomainData = {
         name: 'Teller_BNPL_Market',
