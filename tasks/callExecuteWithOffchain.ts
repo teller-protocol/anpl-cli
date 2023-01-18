@@ -183,6 +183,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
         interestRate:submitBidArgs.interestRate,
         referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        marketId: executeConfig.marketplaceId.toString()
       }
 
 
