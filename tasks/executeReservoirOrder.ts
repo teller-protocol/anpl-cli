@@ -198,6 +198,7 @@ export async function executeReservoirOrder(): Promise<any> {
 
         //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
+        borrower: borrowerAddress,
         lender: lenderAddress,
         totalPurchasePrice: submitBidArgs.totalPurchasePrice,
         principal: submitBidArgs.principal,
@@ -212,8 +213,8 @@ export async function executeReservoirOrder(): Promise<any> {
 
 
 
-    console.log({basicOrderParams})
-    console.log({formattedSubmitBidArgs})
+    console.log(JSON.stringify(basicOrderParams))
+    console.log(JSON.stringify(formattedSubmitBidArgs))
 
 
     //Set price to 1 Gwei
@@ -223,7 +224,9 @@ export async function executeReservoirOrder(): Promise<any> {
 
 
 
-    let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
+    let value:BigNumber = BigNumber.from(submitBidArgs.downPayment) 
+
+    console.log({value})     
 
     let unsignedTx = await bnplContractInstance
     .populateTransaction
@@ -232,7 +235,7 @@ export async function executeReservoirOrder(): Promise<any> {
       basicOrderParams, 
       borrowerSignature,
       lenderSignature      
-      , {from: borrowerAddress, value, gasLimit, gasPrice} )
+      , { value, gasLimit, gasPrice} )
 
   
       console.log('made unsigned tx')
