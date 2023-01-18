@@ -173,7 +173,7 @@ export async function executeReservoirOrder(): Promise<any> {
         marketId
     }
 
-    const implementationContractAddress = "0x3bf7f0d0fa47f2101f67bd530f1be7ad05d90321"
+    const implementationContractAddress = "0x3bf7F0D0FA47F2101f67bd530F1bE7aD05D90321"
 
     const domainData:DomainData = {
         name: 'Teller_BNPL_Market',
