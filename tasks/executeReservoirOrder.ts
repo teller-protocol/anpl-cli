@@ -12,17 +12,16 @@ import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-hel
  
 import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 import { fetchReservoirOrderById, formatReservoirOrder } from '../lib/reservoir-helper'
+import { calculatePrincipalRequiredForBorrowerPayout } from '../lib/teller-v2-lending-helper'
 
-import { BasicOrderParams, ReservoirOrder, ReservoirOrderRawData, SubmitBidArgs } from '../lib/types'
+import { AdditionalRecipient, BasicOrderParams, DomainData, ReservoirOrder, ReservoirOrderRawData, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
-const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY
+const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY!
 
-const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
- 
-
-
+const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY!
+  
 
 
 const networkName = 'mainnet'
@@ -44,15 +43,14 @@ const chainId = "1"
 const marketId = "6"
 
 /*
+
 const executeConfig = {
    
   marketplaceId: 2
 
 } 
 
-
 const craResponseSample = require('../test/data/sampleCraOutput.json')
-
 
 let tokenInputData = require('../data/tokenInputData.json')
 let networkName = networkNameFromChainId( tokenInputData.chainId  )
@@ -84,12 +82,17 @@ export async function executeReservoirOrder(): Promise<any> {
  
     const {basicOrderParams}  = formatReservoirOrder( orderResponse )
 
-    console.log({basicOrderParams})
 
 
     if(!basicOrderParams){
         throw new Error('Unable to build basic order params')
     }
+
+
+    const additionalRecipientsFormatted:AdditionalRecipient[] = basicOrderParams.additionalRecipients.map( (r:any) =>  {return {
+        amount: BigNumber.from(r.amount),
+        recipient: r.recipient
+        }}) 
 
     const basicOrderParamsFormatted:BasicOrderParams = {
         considerationToken: basicOrderParams.considerationToken,
@@ -108,14 +111,10 @@ export async function executeReservoirOrder(): Promise<any> {
         offererConduitKey: basicOrderParams.offererConduitKey,
         fulfillerConduitKey: basicOrderParams.fulfillerConduitKey,
         totalOriginalAdditionalRecipients: BigNumber.from(basicOrderParams.totalOriginalAdditionalRecipients),
-        additionalRecipients: basicOrderParams.additionalRecipients,
+        additionalRecipients: additionalRecipientsFormatted,
         signature: basicOrderParams.signature
     }
-
-
-
-
-
+ 
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -124,28 +123,61 @@ export async function executeReservoirOrder(): Promise<any> {
 
 
 
+    const borrowerWallet = new Wallet(borrowerPrivateKey)
+
+    const lenderWallet = new Wallet(lenderPrivateKey)
+
+    const lenderAddress = lenderWallet.address
+
+
+
+    const totalPurchasePrice = basicOrderParams.considerationAmount
+
+    const downPayment = BigNumber.from(totalPurchasePrice).div(2).toString()
+
+    const amountRequiredForLoan = BigNumber.from(totalPurchasePrice).sub( downPayment )
+
+    const principal = calculatePrincipalRequiredForBorrowerPayout(
+         amountRequiredForLoan, 
+         BigNumber.from(0),  //market fee for market 6 
+         BigNumber.from(5) //protocol fee 
+         ).toString()
+
     let submitBidArgs:SubmitBidArgs = {
-        totalPurchasePrice: '',
-        principal: '',
-        downPayment: '',
-        duration: '',
-        signatureExpiration: '',
-        interestRate: '',
-        referralAddress: '',
-        metadataURI: '',
-        marketId: ''
+        totalPurchasePrice,
+        principal,
+        downPayment,
+
+        duration: '28000',
+        signatureExpiration: (Date.now() + 90*60*1000).toString(),
+        interestRate: '300',
+        referralAddress: ethers.constants.AddressZero,
+        metadataURI: 'ipfs://',
+        marketId
     }
 
     const implementationContractAddress = "0x3bf7f0d0fa47f2101f67bd530f1be7ad05d90321"
 
+    const domainData:DomainData = {
+        name: 'Teller_BNPL_Market',
+        version: '3.5',
+        chainId: parseInt(chainId),
+        verifyingContract: implementationContractAddress
+    }
 
     let borrowerSignature = await generateBNPLOrderSignature( 
         submitBidArgs,
-        basicOrderParamsFormatted,   
-        borrowerWallet,
-        parseInt(chainId),
-        implementationContractAddress
+        basicOrderParamsFormatted,  
+        domainData, 
+        borrowerWallet,      
        ) 
+
+    let lenderSignature = await generateBNPLOrderSignature( 
+        submitBidArgs,
+        basicOrderParamsFormatted,   
+        domainData,
+        lenderWallet,       
+        ) 
 
 
         //fix it for now to remove referral and sig expir
@@ -164,12 +196,18 @@ export async function executeReservoirOrder(): Promise<any> {
 
 
 
+    console.log({basicOrderParams})
+    console.log({formattedSubmitBidArgs})
+
+
     //Set price to 1 Gwei
     let gasPrice = utils.hexlify(8_000_000_000);
     //Set max gas limit to 4M
     var gasLimit = utils.hexlify(10_000_000);  
 
 
+
+    let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
 
     let unsignedTx = await bnplContractInstance
     .populateTransaction
@@ -270,9 +308,7 @@ export async function executeReservoirOrder(): Promise<any> {
     if(typeof(implementationContractAddress) == 'undefined'){
       return {success:false, error:"Could not get implementation address"}
     }
-
-
-
+ 
 
 
       let lenderSignature = await generateBNPLOrderSignature( 
@@ -311,8 +347,7 @@ export async function executeReservoirOrder(): Promise<any> {
         return 
     }
 
- 
- 
+
 
 
       //fix it for now to remove referral and sig expir

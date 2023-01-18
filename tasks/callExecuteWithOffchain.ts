@@ -6,7 +6,7 @@ import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-hel
  
 import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 
-import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
+import { BasicOrderParams, DomainData, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
@@ -130,22 +130,27 @@ export async function callExecuteWithOffchain(): Promise<any> {
 
 
 
-
+    const domainData:DomainData= {
+      name: '',
+      version: '',
+      chainId: 0,
+      verifyingContract: ''
+    }
 
       let lenderSignature = await generateBNPLOrderSignature( 
         submitBidArgs,
-        basicOrderParams,   
+        basicOrderParams,  
+        domainData ,
         lenderWallet,
-        chainId,
-        implementationContractAddress
+       
        ) 
 
        let borrowerSignature = await generateBNPLOrderSignature( 
         submitBidArgs,
         basicOrderParams,   
+        domainData ,
         borrowerWallet,
-        chainId,
-        implementationContractAddress
+       
        ) 
 
 

@@ -45,10 +45,10 @@ export interface BasicOrderParamsResponse {
   offererConduitKey: string
   fulfillerConduitKey: string
   totalOriginalAdditionalRecipients: string //bn
-  additionalRecipients: AdditionalRecipient[]
+  additionalRecipients: AdditionalRecipientResponse[]
   signature: string
 }
-export interface AdditionalRecipient {
+export interface AdditionalRecipientResponse {
   amount: string //bn
   recipient: string
 }
@@ -197,9 +197,15 @@ export interface TellerInputs {
     offererConduitKey: string,
     fulfillerConduitKey: string,
     totalOriginalAdditionalRecipients: BigNumber,
-    additionalRecipients:object[],
+    additionalRecipients: AdditionalRecipient[],
     signature: string
  }
+
+
+ export interface AdditionalRecipient {
+  amount: BigNumber //bn
+  recipient: string
+}
 
 
  export interface ExecuteParams {
