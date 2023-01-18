@@ -217,7 +217,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
  
    /* let unsignedTx = await bnplContractInstance
     .populateTransaction
-    .executeWithOffchainSignatures(
+    .executeUsingOffchainSignatures(
       formattedSubmitBidArgs, 
       basicOrderParams, 
       borrowerSignature,

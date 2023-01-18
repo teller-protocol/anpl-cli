@@ -116,6 +116,8 @@ export async function executeReservoirOrder(): Promise<any> {
     }
  
 
+    console.log({bnplConfig})
+
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
     let tellerV2Instance = new Contract(tellerV2Config.address,tellerV2Config.abi, rpcProvider)
@@ -125,6 +127,10 @@ export async function executeReservoirOrder(): Promise<any> {
 
     const borrowerWallet = new Wallet(borrowerPrivateKey)
 
+
+    const borrowerAddress = borrowerWallet.address
+
+    
     const lenderWallet = new Wallet(lenderPrivateKey)
 
     const lenderAddress = lenderWallet.address
@@ -143,16 +149,26 @@ export async function executeReservoirOrder(): Promise<any> {
          BigNumber.from(5) //protocol fee 
          ).toString()
 
+
+    const secondsNow = Math.floor(Date.now()/1000)
+
+    const signatureExpiration = secondsNow + 90*60*1000
+
     let submitBidArgs:SubmitBidArgs = {
+        borrower: borrowerAddress,
+        lender: lenderAddress, 
+      
+
         totalPurchasePrice,
         principal,
         downPayment,
 
         duration: '28000',
-        signatureExpiration: (Date.now() + 90*60*1000).toString(),
+        signatureExpiration: signatureExpiration.toString(),
         interestRate: '300',
-        referralAddress: ethers.constants.AddressZero,
+      
         metadataURI: 'ipfs://',
+        referralAddress: ethers.constants.AddressZero,
         marketId
     }
 
@@ -211,14 +227,15 @@ export async function executeReservoirOrder(): Promise<any> {
 
     let unsignedTx = await bnplContractInstance
     .populateTransaction
-    .executeWithOffchainSignatures(
+    .executeUsingOffchainSignatures(
       formattedSubmitBidArgs, 
       basicOrderParams, 
       borrowerSignature,
       lenderSignature      
-      , {value, gasLimit, gasPrice} )
+      , {from: borrowerAddress, value, gasLimit, gasPrice} )
 
   
+      console.log('made unsigned tx')
 
     let response = await borrowerWallet.sendTransaction(unsignedTx);
     console.log('response',response)
