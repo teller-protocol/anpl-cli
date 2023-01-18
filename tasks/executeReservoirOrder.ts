@@ -125,7 +125,7 @@ export async function executeReservoirOrder(): Promise<any> {
 
 
 
-    const borrowerWallet = new Wallet(borrowerPrivateKey)
+    const borrowerWallet = new Wallet(borrowerPrivateKey, rpcProvider)
 
 
     const borrowerAddress = borrowerWallet.address
@@ -206,14 +206,14 @@ export async function executeReservoirOrder(): Promise<any> {
         duration: submitBidArgs.duration,       
         signatureExpiration: submitBidArgs.signatureExpiration,
         interestRate:submitBidArgs.interestRate,
-        referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        referralAddress: submitBidArgs.referralAddress,      
         marketId
       }
 
 
 
-    console.log(JSON.stringify(basicOrderParams))
+    console.log(JSON.stringify(basicOrderParamsFormatted))
     console.log(JSON.stringify(formattedSubmitBidArgs))
 
 
@@ -223,19 +223,17 @@ export async function executeReservoirOrder(): Promise<any> {
     var gasLimit = utils.hexlify(10_000_000);  
 
 
-
-    let value:BigNumber = BigNumber.from(submitBidArgs.downPayment) 
-
-    console.log({value})     
+ 
+    console.log({borrowerSignature})
 
     let unsignedTx = await bnplContractInstance
     .populateTransaction
     .executeUsingOffchainSignatures(
       formattedSubmitBidArgs, 
-      basicOrderParams, 
+      basicOrderParamsFormatted, 
       borrowerSignature,
       lenderSignature      
-      , { value, gasLimit, gasPrice} )
+      , {   gasLimit, gasPrice} )
 
   
       console.log('made unsigned tx')

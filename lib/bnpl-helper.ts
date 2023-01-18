@@ -92,25 +92,8 @@ export function buildExecuteParams(inputData:CraResponse ): ExecuteParams {
 
       
 
-      const signature = signOffchainOffer(signConfig)
+      const signature = await signOffchainOffer(signConfig)
       
-
-
-     /* let signatureVersion = 3
-
-      let signatureResponse = await craSign( 
-        submitBidArgs, 
-        basicOrderParams, 
-        chainId, 
-        signatureVersion, 
-        implementationContractAddress, 
-        wallet, 
-        true)
-
-
-        if(signatureResponse.success){
-          return signatureResponse.data 
-        }
-
-        return undefined */
+      return signature
+ 
     }
