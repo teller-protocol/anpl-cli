@@ -11,9 +11,9 @@ import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
  
 import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
-import { fetchReservoirOrderById } from '../lib/reservoir-helper'
+import { fetchReservoirOrderById, formatReservoirOrder } from '../lib/reservoir-helper'
 
-import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
+import { BasicOrderParams, ReservoirOrder, ReservoirOrderRawData, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
@@ -25,7 +25,23 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
 
 
 
+const networkName = 'mainnet'
+ 
+let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
+
+const rpcURI = getRpcUrlFromNetworkName(networkName) 
+const tellerV2Config = {
+    address: contractsConfig.tellerV2.address,
+    abi: require('../abi/TellerV2.json')
+}
+const bnplConfig = {
+    address: contractsConfig.BNPLContract.address,
+    abi: require('../abi/BNPLMarketV3.json')
+}
+
+const chainId = "1"
+const marketId = "6"
 
 /*
 const executeConfig = {
@@ -43,24 +59,12 @@ let networkName = networkNameFromChainId( tokenInputData.chainId  )
 let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
 const ProxyAdminInterface = require('../abi/OpenZeppelinTransparentProxyAdmin.abi.json')
-
-const rpcURI = getRpcUrlFromNetworkName(networkName) 
-
-//was 0x519b957ecaa80C5aEd4C5547Ff2Eac3ff5dE229c
-const tellerV2Config = {
-    address: contractsConfig.tellerV2.address,
-    abi: require('../abi/TellerV2.json')
-}
-
-const bnplConfig = {
-    address: contractsConfig.BNPLContract.address,
-    abi: require('../abi/BNPLMarketV3.json')
-  }
+ 
 */
 
 /*
 
-Test w tenderly test RPC 
+Test w tenderly test RPC  ?
 
 */
 
@@ -70,9 +74,116 @@ export async function executeReservoirOrder(): Promise<any> {
 
     const orderId = "0x36676cd9406a187400fc3154d3e1e214374e4c907e31eef963b0dcef366cb15b"
 
-    const orderResponse = await fetchReservoirOrderById({orderId})
+    const orderResponse:ReservoirOrder|undefined = await fetchReservoirOrderById({orderId})
 
     console.log({orderResponse})
+
+    if(!orderResponse){
+        throw new Error('No matching order from reservoir')
+    }
+ 
+    const {basicOrderParams}  = formatReservoirOrder( orderResponse )
+
+    console.log({basicOrderParams})
+
+
+    if(!basicOrderParams){
+        throw new Error('Unable to build basic order params')
+    }
+
+    const basicOrderParamsFormatted:BasicOrderParams = {
+        considerationToken: basicOrderParams.considerationToken,
+        considerationIdentifier: BigNumber.from(basicOrderParams.considerationIdentifier),
+        considerationAmount: BigNumber.from(basicOrderParams.considerationAmount),
+        offerer: basicOrderParams.offerer,
+        zone: basicOrderParams.zone,
+        offerToken: basicOrderParams.offerToken,
+        offerIdentifier: BigNumber.from(basicOrderParams.offerIdentifier),
+        offerAmount: basicOrderParams.offerAmount,
+        basicOrderType: basicOrderParams.basicOrderType,
+        startTime: BigNumber.from(basicOrderParams.startTime),
+        endTime: BigNumber.from(basicOrderParams.endTime),
+        zoneHash: basicOrderParams.zoneHash,
+        salt: basicOrderParams.salt,
+        offererConduitKey: basicOrderParams.offererConduitKey,
+        fulfillerConduitKey: basicOrderParams.fulfillerConduitKey,
+        totalOriginalAdditionalRecipients: BigNumber.from(basicOrderParams.totalOriginalAdditionalRecipients),
+        additionalRecipients: basicOrderParams.additionalRecipients,
+        signature: basicOrderParams.signature
+    }
+
+
+
+
+
+
+    let rpcProvider = new providers.JsonRpcProvider( rpcURI )
+    
+    let tellerV2Instance = new Contract(tellerV2Config.address,tellerV2Config.abi, rpcProvider)
+    let bnplContractInstance = new Contract(bnplConfig.address,bnplConfig.abi,rpcProvider)
+
+
+
+    let submitBidArgs:SubmitBidArgs = {
+        totalPurchasePrice: '',
+        principal: '',
+        downPayment: '',
+        duration: '',
+        signatureExpiration: '',
+        interestRate: '',
+        referralAddress: '',
+        metadataURI: '',
+        marketId: ''
+    }
+
+    const implementationContractAddress = "0x3bf7f0d0fa47f2101f67bd530f1be7ad05d90321"
+
+
+    let borrowerSignature = await generateBNPLOrderSignature( 
+        submitBidArgs,
+        basicOrderParamsFormatted,   
+        borrowerWallet,
+        parseInt(chainId),
+        implementationContractAddress
+       ) 
+
+
+        //fix it for now to remove referral and sig expir
+      let formattedSubmitBidArgs:SubmitBidArgs = {
+        lender: lenderAddress,
+        totalPurchasePrice: submitBidArgs.totalPurchasePrice,
+        principal: submitBidArgs.principal,
+        downPayment: submitBidArgs.downPayment,       
+        duration: submitBidArgs.duration,       
+        signatureExpiration: submitBidArgs.signatureExpiration,
+        interestRate:submitBidArgs.interestRate,
+        referralAddress: submitBidArgs.referralAddress,
+        metadataURI: submitBidArgs.metadataURI ,
+        marketId
+      }
+
+
+
+    //Set price to 1 Gwei
+    let gasPrice = utils.hexlify(8_000_000_000);
+    //Set max gas limit to 4M
+    var gasLimit = utils.hexlify(10_000_000);  
+
+
+
+    let unsignedTx = await bnplContractInstance
+    .populateTransaction
+    .executeWithOffchainSignatures(
+      formattedSubmitBidArgs, 
+      basicOrderParams, 
+      borrowerSignature,
+      lenderSignature      
+      , {value, gasLimit, gasPrice} )
+
+  
+
+    let response = await borrowerWallet.sendTransaction(unsignedTx);
+    console.log('response',response)
 
 
 

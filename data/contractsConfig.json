@@ -40,6 +40,7 @@
     "BNPLContract":{
         "address": "0x260C32eB38D1403bd51B83B5b7047812C70B7845" 
     },
+    
     "seaport":{
         "address": "0x00000000006c3852cbef3e08e8df289169ede581"
     },
