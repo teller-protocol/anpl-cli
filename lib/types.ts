@@ -1,6 +1,84 @@
 import { BigNumber } from "ethers";
 
 
+
+
+export interface ReservoirOrderRawData {
+  kind: string
+  salt: string
+  zone: string
+  offer: Consideration[]
+  counter: string
+  endTime: string
+  offerer: string
+  zoneHash: string
+  orderType: number
+  signature: string
+  startTime: string
+  conduitKey: string
+  consideration: Consideration[]
+}
+export interface ReservoirOrder {
+  id: string
+  kind: string
+  status: string
+  contract: string
+  rawData: ReservoirOrderRawData
+}
+
+
+
+export interface BasicOrderParamsResponse {
+  considerationToken: string
+  considerationIdentifier: string //bn
+  considerationAmount: string //bn
+  offerer: string
+  zone: string
+  offerToken: string
+  offerIdentifier: string //bn
+  offerAmount: string
+  basicOrderType: number
+  startTime: string //bn
+  endTime: string //bn
+  zoneHash: string
+  salt: string
+  offererConduitKey: string
+  fulfillerConduitKey: string
+  totalOriginalAdditionalRecipients: string //bn
+  additionalRecipients: AdditionalRecipientResponse[]
+  signature: string
+}
+export interface AdditionalRecipientResponse {
+  amount: string //bn
+  recipient: string
+}
+
+export interface SeaportProtocolData {
+  // was opensearesponse
+  // nftPrice: string;
+  parameters: SeaportProtocolParameters
+  signature: string
+}
+
+
+export interface SeaportProtocolParameters {
+  // was opensearesponseparameters
+  // nftPrice: string;
+  consideration: Consideration[]
+  parameterOrderType: number
+  offerer: string
+  zone: string
+  offer: Consideration[]
+  startTime: string
+  endTime: string
+  orderType: number
+  zoneHash: string
+  salt: string
+  totalOriginalConsiderationItems?: string
+  conduitKey: string
+}
+
+
 export interface DomainData {
   name: string
   version: string
@@ -20,6 +98,7 @@ export interface SubmitBidArgs {
   interestRate: string
   referralAddress: string
   metadataURI: string 
+  marketId: string 
 }
  
 
@@ -74,7 +153,7 @@ export interface Consideration {
   startAmount: string,
   endAmount: string,
   itemType: number
-
+  recipient?: string
 }
   
 /*
@@ -118,9 +197,15 @@ export interface TellerInputs {
     offererConduitKey: string,
     fulfillerConduitKey: string,
     totalOriginalAdditionalRecipients: BigNumber,
-    additionalRecipients:object[],
+    additionalRecipients: AdditionalRecipient[],
     signature: string
  }
+
+
+ export interface AdditionalRecipient {
+  amount: BigNumber //bn
+  recipient: string
+}
 
 
  export interface ExecuteParams {

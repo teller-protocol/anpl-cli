@@ -8,6 +8,7 @@ import { approveMarket } from './approveMarket'
 import {getNFTsOwned} from './getNFTsOwned'
 import {callExecuteWithOffchain} from './callExecuteWithOffchain'
 import {submitOffchainOffer} from './submitOffchainOffer' 
+import {executeReservoirOrder} from './executeReservoirOrder'
 
 const yargs = require('yargs').argv
  
@@ -19,7 +20,8 @@ const taskMap: any = {
   fetchCraResponse,
   approveMarket,
   getNFTsOwned,
-  submitOffchainOffer
+  submitOffchainOffer,
+  executeReservoirOrder
 //  matchOrder
 }
 

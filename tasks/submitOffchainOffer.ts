@@ -150,6 +150,7 @@ export async function submitOffchainOffer(): Promise<any> {
         interestRate:submitBidArgs.interestRate,
         referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        marketId:"2"
       }
 
       let borrowerSignature = await signOffchainOffer({
