@@ -15,7 +15,7 @@ import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, pe
 import { fetchReservoirOrderById, formatReservoirOrder } from '../lib/reservoir-helper'
 import { calculatePrincipalRequiredForBorrowerPayout } from '../lib/teller-v2-lending-helper'
 
-import { AdditionalRecipient, BasicOrderParams, DomainData, ReservoirOrder, ReservoirOrderRawData, SubmitBidArgs } from '../lib/types'
+import { AdditionalRecipient, AdditionalRecipientResponse, BasicOrderParams, DomainData, ReservoirOrder, ReservoirOrderRawData, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
@@ -42,28 +42,11 @@ const bnplConfig = {
 
 const chainId = "1"
 const marketId = "6"
-
-/*
-
-const executeConfig = {
-   
-  marketplaceId: 2
-
-} 
-
-const craResponseSample = require('../test/data/sampleCraOutput.json')
-
-let tokenInputData = require('../data/tokenInputData.json')
-let networkName = networkNameFromChainId( tokenInputData.chainId  )
-let contractsConfig = require('../data/contractsConfig.json')[networkName]
-
-const ProxyAdminInterface = require('../abi/OpenZeppelinTransparentProxyAdmin.abi.json')
  
-*/
 
 /*
 
-Test w tenderly test RPC  ?
+Test w tenderly test RPC  
 
 */
 
@@ -140,7 +123,7 @@ export async function executeReservoirOrder(): Promise<any> {
 
 
     const considerationAmount = BigNumber.from( basicOrderParams.considerationAmount )
-    const additionalAmount = BigNumber.from( basicOrderParams.additionalRecipients[0].amount)
+    const additionalAmount = calculateTotalAdditionalAmount( basicOrderParams.additionalRecipients ) 
     const totalPurchasePrice = considerationAmount.add(additionalAmount).toString()
 
     const downPayment = BigNumber.from(totalPurchasePrice).div(2).toString()
@@ -265,3 +248,16 @@ export async function executeReservoirOrder(): Promise<any> {
   
 
   
+
+
+
+  function calculateTotalAdditionalAmount( additionalRecipients: AdditionalRecipientResponse[] ) : BigNumber {
+
+    let result = BigNumber.from(0)
+
+    additionalRecipients.map( (r:any) => result = result.add(r.amount))
+
+    return result
+
+
+  }
