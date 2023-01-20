@@ -1,28 +1,28 @@
  
 
 import { callExecute } from './callExecute'
-import { submitDiscrete } from './submitDiscrete'
-import { acceptDiscrete } from './acceptDiscrete'
+ 
 import { fetchCraResponse } from './fetchCraResponse'
 import { approveMarket } from './approveMarket'
 import {getNFTsOwned} from './getNFTsOwned'
 import {callExecuteWithOffchain} from './callExecuteWithOffchain'
 import {submitOffchainOffer} from './submitOffchainOffer' 
 import {executeReservoirOrder} from './executeReservoirOrder'
+import {tenderlyAddBalance} from './tenderlyAddBalance'
+import {signOffer} from './signOffer'
 
 const yargs = require('yargs').argv
  
 const taskMap: any = {
   callExecuteWithOffchain,
-  callExecute,
-  submitDiscrete,
-  acceptDiscrete,
+  callExecute, 
   fetchCraResponse,
   approveMarket,
   getNFTsOwned,
   submitOffchainOffer,
-  executeReservoirOrder
-//  matchOrder
+  executeReservoirOrder,
+  tenderlyAddBalance,
+  signOffer
 }
 
 async function init(): Promise<void> {
