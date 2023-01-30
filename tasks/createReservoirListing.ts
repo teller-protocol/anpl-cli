@@ -12,6 +12,7 @@ import { toChecksumAddress } from 'ethereumjs-util'
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 
 import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
+import { createReservoirOrder } from '../lib/reservoir-helper'
  
  
 import { AdditionalRecipient, AdditionalRecipientResponse, BasicOrderParams, DomainData, ReservoirOrder, ReservoirOrderRawData, SubmitBidArgs } from '../lib/types'
@@ -23,36 +24,24 @@ const sellerPrivateKey = process.env.SELLER_PRIVATE_KEY!
   
 
 
-const networkName = 'goerli'
- 
 let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
 
 const rpcURI = getRpcUrlFromNetworkName(networkName) 
  
  
+const networkName = 'goerli'
+ 
 const chainId = "5"
  
- 
-
-/*
-
-Test w tenderly test RPC  
-
-*/
+  
 
 const WETH_ADDRESS = ""
 
 export async function createReservoirListing(): Promise<any> {
 
-    
-    let rpcProvider = new providers.JsonRpcProvider( rpcURI )
-   
-    const sellerWallet = new Wallet(sellerPrivateKey, rpcProvider)
 
-    const sellerAddress = sellerWallet.address
 
-    
 
     //---------------------
 
@@ -66,6 +55,15 @@ export async function createReservoirListing(): Promise<any> {
 
 
 
+    
+    let rpcProvider = new providers.JsonRpcProvider( rpcURI )
+   
+    const sellerWallet = new Wallet(sellerPrivateKey, rpcProvider)
+
+    const sellerAddress = sellerWallet.address
+
+    
+
 
     const orderResponse:ReservoirOrder|undefined = await createReservoirOrder(
         {chainId:parseInt(chainId),
@@ -73,8 +71,7 @@ export async function createReservoirListing(): Promise<any> {
          currency: WETH_ADDRESS,
          tokenAddress: nftTokenAddress,
          tokenId: nftTokenId,
-         weiPrice: listingPriceWei       
-        
+         weiPrice: listingPriceWei         
         }
         )
 
