@@ -10,6 +10,7 @@ import {submitOffchainOffer} from './submitOffchainOffer'
 import {executeReservoirOrder} from './executeReservoirOrder'
 import {tenderlyAddBalance} from './tenderlyAddBalance'
 import {signOffer} from './signOffer'
+import {createReservoirListing} from './createReservoirListing'
 
 const yargs = require('yargs').argv
  
@@ -22,7 +23,8 @@ const taskMap: any = {
   submitOffchainOffer,
   executeReservoirOrder,
   tenderlyAddBalance,
-  signOffer
+  signOffer,
+  createReservoirListing
 }
 
 async function init(): Promise<void> {

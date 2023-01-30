@@ -11,12 +11,65 @@ const BLANK_SIGNATURE =
   '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
 
   
+
+  export async function createReservoirOrder(
+    {chainId, maker, currency, tokenAddress, tokenId, weiPrice }:
+    {chainId?:number,
+     maker:string,
+     currency:string,
+     tokenAddress:string,
+     tokenId:string,
+     weiPrice:string
+    }
+  ): Promise<any> {
+ 
+ 
+    const apiUrl = chainId==5 ? new URL('https://api-goerli.reservoir.tools/execute/list/v4') : new URL('https://api.reservoir.tools/execute/list/v4')
+
+    const currentSeconds = new Date().getSeconds()
+
+    apiUrl.searchParams.set('maker', `${maker}`) 
+    apiUrl.searchParams.set('params',  
+
+     JSON.stringify([
+      {
+        orderKind:'seaport',
+        orderbook:'reservoir',
+        automatedRoyalties: false,
+        currency,
+        token:`${tokenAddress}:${tokenId}`,
+        weiPrice,
+        fees:[],
+        listingTime: currentSeconds.toString(),
+        expirationTime: (currentSeconds+1000000).toString(),
+
+
+
+
+      
+      }
+
+      ])
+ 
+
+    )
+  
+    const headers = {
+      'x-api-key': RESERVOIR_API_KEY, 
+      'accept':'*/*',
+     
+    }
+
+
+  }
+
 export async function fetchReservoirOrderById(
-    {orderId}:{orderId:string}
+    {orderId,chainId}:{orderId:string,chainId?:number}
     ) : Promise<any> {
     
+    
  
-    const apiUrl = new URL('https://api-goerli.reservoir.tools/orders/asks/v4')
+    const apiUrl = chainId==5 ? new URL('https://api-goerli.reservoir.tools/orders/asks/v4') : new URL('https://api.reservoir.tools/orders/asks/v4')
 
     apiUrl.searchParams.set('ids', `${orderId}`) 
     apiUrl.searchParams.set('includeRawData', 'true')

@@ -54,9 +54,10 @@ Test w tenderly test RPC
 
 export async function executeReservoirOrder(): Promise<any> {
 
-    const orderId = "0x2a0d6927c66c0c3f99b956e115266a79ac1fd6b717cd53c650ae7d89ea0038d1"
-
-    const orderResponse:ReservoirOrder|undefined = await fetchReservoirOrderById({orderId})
+    
+    const orderId = "0x2cdc3cff138ad14ac994bf07543f6e1ee1658de5d1c29c78ee76f95f11bee5d2"
+   
+    const orderResponse:ReservoirOrder|undefined = await fetchReservoirOrderById({orderId, chainId:parseInt(chainId)})
 
     console.log({orderResponse})
 
@@ -150,7 +151,7 @@ export async function executeReservoirOrder(): Promise<any> {
         principal,
         downPayment,
 
-        duration: '28000',
+        duration: '1604800',
         signatureExpiration: signatureExpiration.toString(),
         interestRate: '300',
       
@@ -164,7 +165,7 @@ export async function executeReservoirOrder(): Promise<any> {
 
     const domainData:DomainData = {
         name: 'Teller_BNPL_Market',
-        version: '3.5',
+        version: '3.6',
         chainId: parseInt(chainId),
         verifyingContract: implementationContractAddress
     }
