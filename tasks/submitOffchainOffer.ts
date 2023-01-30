@@ -108,7 +108,7 @@ export async function submitOffchainOffer(): Promise<any> {
       throw new Error('Missing offererConduitKey')
     }
 
-    const chainId = 1 // tokenInputData.chainId
+    const chainId = 5 // tokenInputData.chainId
 
 
 

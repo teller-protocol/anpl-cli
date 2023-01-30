@@ -25,7 +25,7 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY!
   
 
 
-const networkName = 'mainnet'
+const networkName = 'goerli'
  
 let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
@@ -40,7 +40,7 @@ const bnplConfig = {
     abi: require('../abi/BNPLMarketV3.json')
 }
 
-const chainId = "1"
+const chainId = "5"
 const marketId = "6"
  
 
@@ -54,7 +54,7 @@ Test w tenderly test RPC
 
 export async function executeReservoirOrder(): Promise<any> {
 
-    const orderId = "0x36676cd9406a187400fc3154d3e1e214374e4c907e31eef963b0dcef366cb15b"
+    const orderId = "0x2a0d6927c66c0c3f99b956e115266a79ac1fd6b717cd53c650ae7d89ea0038d1"
 
     const orderResponse:ReservoirOrder|undefined = await fetchReservoirOrderById({orderId})
 
@@ -132,7 +132,7 @@ export async function executeReservoirOrder(): Promise<any> {
 
     const principal = calculatePrincipalRequiredForBorrowerPayout(
          amountRequiredForLoan, 
-         BigNumber.from(0),  //market fee for market 6 
+         BigNumber.from(300),  //market fee for market 6 
          BigNumber.from(5) //protocol fee 
          ).toString()
 
