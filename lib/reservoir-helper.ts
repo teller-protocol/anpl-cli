@@ -16,7 +16,7 @@ export async function fetchReservoirOrderById(
     ) : Promise<any> {
     
  
-    const apiUrl = new URL('https://api.reservoir.tools/orders/asks/v4')
+    const apiUrl = new URL('https://api-goerli.reservoir.tools/orders/asks/v4')
 
     apiUrl.searchParams.set('ids', `${orderId}`) 
     apiUrl.searchParams.set('includeRawData', 'true')
