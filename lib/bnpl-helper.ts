@@ -2,15 +2,15 @@ import { parseFeeMethod, parseHowToCall, parseMetadata, parseSaleKind, WyvernAto
 
  
 import {BigNumber, Contract, ethers,Signer,Wallet} from 'ethers'
-
-import moment from 'moment'
-
+ 
+ 
 import { NULL_BLOCK_HASH } from 'opensea-js/lib/constants'
 
 import { OpenseaHelper, SignedOrder, UnhashedOrder } from '../lib/opensea-helper'
-import { SubmitBidArgs, ContractsConfig, CraResponse, ExecuteParams, BasicOrderParams } from "./types"
+import { SubmitBidArgs, ContractsConfig, CraResponse, ExecuteParams, BasicOrderParams, DomainData } from "./types"
 import { axiosPostRequest } from "./axios-helper"
 import { craSign } from "./cra-signer"
+import { ISignOfferSignerConfig, signOffchainOffer } from "@clarity-credit/anpl-sdk"
  
   
 require('dotenv').config() 
@@ -71,29 +71,29 @@ export function buildExecuteParams(inputData:CraResponse ): ExecuteParams {
 
   }
 
+ 
+
   export async function generateBNPLOrderSignature( 
     submitBidArgs:SubmitBidArgs,
     basicOrderParams:BasicOrderParams,
+    domainData: DomainData,
     wallet: Wallet,
-    chainId: number,
-    implementationContractAddress: string
     ){
 
-      let signatureVersion = 3
+      const signConfig :ISignOfferSignerConfig = {
+        submitBidArgs,
+        basicOrderParams,
+        domainData,
 
-      let signatureResponse = await craSign( 
-        submitBidArgs, 
-        basicOrderParams, 
-        chainId, 
-        signatureVersion, 
-        implementationContractAddress, 
-        wallet, 
-        true)
+        //@ts-ignore
+        signer:wallet,
+        
+      }
 
+      
 
-        if(signatureResponse.success){
-          return signatureResponse.data 
-        }
-
-        return undefined 
+      const signature = await signOffchainOffer(signConfig)
+      
+      return signature
+ 
     }

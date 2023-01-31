@@ -1,10 +1,12 @@
 
 import { toChecksumAddress } from 'ethereumjs-util'
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
+
 import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
-import { axiosPostRequest } from '../lib/axios-helper'
+ 
 import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
-import { BasicOrderParams, SubmitBidArgs } from '../lib/types'
+
+import { BasicOrderParams, DomainData, SubmitBidArgs } from '../lib/types'
 
 require('dotenv').config()
 
@@ -15,9 +17,12 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
 
 const executeConfig = {
    
-  marketplaceId: 2
+  marketplaceId: 6
 
 } 
+
+
+const craResponseSample = require('../test/data/sampleCraOutput.json')
 
 
 let tokenInputData = require('../data/tokenInputData.json')
@@ -62,19 +67,25 @@ export async function callExecuteWithOffchain(): Promise<any> {
       signature_version: signatureVersion
     }
 
-    let craResponse = await performCraRequest( craInputs  )
+
+
+    //call the  GET OFFERS endpoint of the cra server for this ! 
+
+
+   // let craResponse = await performCraRequest( craInputs  )
+    /*let craResponse = {success:true, data: craResponseSample , error:'none'}
+
+    console.log('meep', craResponse)
     
 
     if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
-  
+ 
 
-    let executeParams = craResponse.data 
+    let executeParams = craResponse.data  
 
     if(typeof(executeParams.submitBidArgs.metadataURI) == 'undefined'){
       executeParams.submitBidArgs.metadataURI = "ipfs://"
     }
-
-
 
 
     if(!borrowerPrivateKey) throw new Error('Missing borrowerPrivateKey')
@@ -88,11 +99,12 @@ export async function callExecuteWithOffchain(): Promise<any> {
  
     console.log(`calling execute using account ${borrowerWallet.address}`)
   
-
  
     const submitBidArgs:SubmitBidArgs = executeParams.submitBidArgs
 
 
+    submitBidArgs.borrower = borrowerWallet.address
+    submitBidArgs.lender = borrowerWallet.address
 
     let value:BigNumber = BigNumber.from(submitBidArgs.downPayment)      
 
@@ -123,22 +135,27 @@ export async function callExecuteWithOffchain(): Promise<any> {
 
 
 
-
+    const domainData:DomainData= {
+      name: '',
+      version: '',
+      chainId: 0,
+      verifyingContract: ''
+    }
 
       let lenderSignature = await generateBNPLOrderSignature( 
         submitBidArgs,
-        basicOrderParams,   
+        basicOrderParams,  
+        domainData ,
         lenderWallet,
-        chainId,
-        implementationContractAddress
+       
        ) 
 
        let borrowerSignature = await generateBNPLOrderSignature( 
         submitBidArgs,
         basicOrderParams,   
+        domainData ,
         borrowerWallet,
-        chainId,
-        implementationContractAddress
+       
        ) 
 
 
@@ -176,6 +193,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
         interestRate:submitBidArgs.interestRate,
         referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        marketId: executeConfig.marketplaceId.toString()
       }
 
 
@@ -200,11 +218,11 @@ export async function callExecuteWithOffchain(): Promise<any> {
 
     if((basicOrderParams.basicOrderType) > 22){
       throw new Error('invalid basic order type')
-    }
+    } */
  
    /* let unsignedTx = await bnplContractInstance
     .populateTransaction
-    .executeWithOffchainSignatures(
+    .executeUsingOffchainSignatures(
       formattedSubmitBidArgs, 
       basicOrderParams, 
       borrowerSignature,

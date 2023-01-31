@@ -1,26 +1,49 @@
-import { getRpcUrlFromNetworkName } from "../lib/app-helper";
 
+
+
+
+
+import { recoverSignerOfOffchainOffer } from '@clarity-credit/anpl-sdk'
+import axios from 'axios'
+import { toChecksumAddress } from 'ethereumjs-util'
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 
+import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
+ 
+import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
+import { fetchReservoirOrderById, formatReservoirOrder } from '../lib/reservoir-helper'
+import { calculatePrincipalRequiredForBorrowerPayout } from '../lib/teller-v2-lending-helper'
+
+import { AdditionalRecipient, AdditionalRecipientResponse, BasicOrderParams, DomainData, ReservoirOrder, ReservoirOrderRawData, SubmitBidArgs } from '../lib/types'
+
+require('dotenv').config()
+
+ 
+
+const networkName = 'mainnet'
+ 
+let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
 
-const rpcURI = getRpcUrlFromNetworkName('mainnet') 
+const rpcURI = getRpcUrlFromNetworkName(networkName) 
+ 
+ 
 
 export async function tenderlyAddBalance(): Promise<any> {
 
-  
-  let rpcProvider = new providers.JsonRpcProvider( rpcURI ) 
+    const walletAddress ="0xB11ca87E32075817C82Cc471994943a4290f4a14"
 
+    let provider = new providers.JsonRpcProvider( rpcURI )
 
-  let getBalance = await rpcProvider.send("eth_getBalance", ['0x810E096DDa9ae3Ae2b55a9c45068F9FE8eeea6db', "latest"])
-    console.log({getBalance})
-
-    const params = [ 
-       ['0x810E096DDa9ae3Ae2b55a9c45068F9FE8eeea6db'],
-       ethers.utils.hexValue(ethers.utils.parseUnits("100", "ether").toHexString()) // hex encoded wei amount
+    const params = [
+        [walletAddress],
+        ethers.utils.hexValue(100) // hex encoded wei amount
     ];
+    
+    const addBalance = await provider.send('tenderly_addBalance', params)
 
-    let sent = await rpcProvider.send('tenderly_addBalance', params)
+    console.log({addBalance})
 
-    console.log({sent})
+    
 }
+

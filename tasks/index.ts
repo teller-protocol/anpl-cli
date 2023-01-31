@@ -1,30 +1,30 @@
  
 
 import { callExecute } from './callExecute'
-import { submitDiscrete } from './submitDiscrete'
-import { acceptDiscrete } from './acceptDiscrete'
+ 
 import { fetchCraResponse } from './fetchCraResponse'
 import { approveMarket } from './approveMarket'
-import {getNFTsOwned} from './getNFTsOwned'
-import {tenderlyAddBalance} from './tenderlyAddBalance'
+import {getNFTsOwned} from './getNFTsOwned' 
 import {callExecuteWithOffchain} from './callExecuteWithOffchain'
-import {hasApprovedMarketForwarder} from './hasApprovedMarketForwarder'
-
-//import { matchOrder } from './matchOrder'
+import {submitOffchainOffer} from './submitOffchainOffer' 
+import {executeReservoirOrder} from './executeReservoirOrder'
+import {tenderlyAddBalance} from './tenderlyAddBalance'
+import {signOffer} from './signOffer'
+import {createReservoirListing} from './createReservoirListing'
 
 const yargs = require('yargs').argv
  
 const taskMap: any = {
   callExecuteWithOffchain,
-  callExecute,
-  submitDiscrete,
-  acceptDiscrete,
+  callExecute, 
   fetchCraResponse,
   approveMarket,
   getNFTsOwned,
+  submitOffchainOffer,
+  executeReservoirOrder,
   tenderlyAddBalance,
-  hasApprovedMarketForwarder
-//  matchOrder
+  signOffer,
+  createReservoirListing
 }
 
 async function init(): Promise<void> {
@@ -33,6 +33,8 @@ async function init(): Promise<void> {
   const taskName = yargs['_'][0]
 
   await runTask(taskName)
+
+  
 }
  
 

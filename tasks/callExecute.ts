@@ -138,6 +138,7 @@ export async function callExecute(): Promise<any> {
         interestRate:submitBidArgs.interestRate,
         referralAddress: submitBidArgs.referralAddress,
         metadataURI: submitBidArgs.metadataURI ,
+        marketId: "2"
       }
 
 
