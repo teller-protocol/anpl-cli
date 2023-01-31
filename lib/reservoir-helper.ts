@@ -1,6 +1,6 @@
 
 import axios from 'axios'
-import { BigNumber } from 'ethers'
+import { BigNumber, Signer } from 'ethers'
 import { AdditionalRecipient, BasicOrderParams, BasicOrderParamsResponse, ReservoirOrder, SeaportProtocolData, SeaportProtocolParameters } from './types'
 
 require('dotenv').config()
@@ -27,9 +27,7 @@ const BLANK_SIGNATURE =
     const apiUrl = chainId==5 ? new URL('https://api-goerli.reservoir.tools/execute/list/v4') : new URL('https://api.reservoir.tools/execute/list/v4')
 
     const currentSeconds = Math.floor(Date.now() / 1000)
-
-    
-
+ 
     const data = {
       maker,
       params: [
@@ -102,7 +100,44 @@ export async function fetchReservoirOrderById(
 
 }
 
+export async function submitSignedReservoirOrder(
+  {orderData,chainId}:{orderData:any,chainId?:number}
 
+){
+  
+
+  const apiUrl = chainId==5 ? new URL('https://api-goerli.reservoir.tools/order/v3') : new URL('https://api.reservoir.tools/order/v3')
+
+  apiUrl.searchParams.set('signature', `${orderData.signature}`) 
+
+  const order = orderData.post.body.order
+
+  const data = {
+     order,
+     orderbook:"reservoir"
+  }
+
+  const headers = {
+    'x-api-key': RESERVOIR_API_KEY, 
+    'accept':'*/*'   
+  }
+
+  const response = await axios.post(apiUrl.toString(), data, { headers })
+ 
+
+  console.log({response})
+
+  return {success:true, data:response.data} 
+
+}
+
+export async function signReservoirOrder(orderData:{domain:any,types:any,value:any}, signer:Signer) : Promise<string> {
+
+  //@ts-expect-error
+  const sig = await signer._signTypedData(orderData.domain, orderData.types, orderData.value);
+
+  return sig 
+}
 
 export function formatReservoirOrder(order: ReservoirOrder): {
     order: ReservoirOrder
