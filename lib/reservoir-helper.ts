@@ -72,12 +72,19 @@ const BLANK_SIGNATURE =
   }
 
 export async function fetchReservoirOrderById(
-    {orderId,chainId}:{orderId:string,chainId?:number}
+    {orderId,
+      chainId,
+      customEndpointUrl
+    }:{
+      orderId:string,
+      chainId?:number,
+      customEndpointUrl?:string
+    }
     ) : Promise<any> {
     
-    
+    let reservoirApiUrl = chainId==5 ? new URL('https://api-goerli.reservoir.tools/orders/asks/v4') : new URL('https://api.reservoir.tools/orders/asks/v4')
  
-    const apiUrl = chainId==5 ? new URL('https://api-goerli.reservoir.tools/orders/asks/v4') : new URL('https://api.reservoir.tools/orders/asks/v4')
+    const apiUrl  = customEndpointUrl ? new URL(customEndpointUrl) : new URL(reservoirApiUrl)
 
     apiUrl.searchParams.set('ids', `${orderId}`) 
     apiUrl.searchParams.set('includeRawData', 'true')
