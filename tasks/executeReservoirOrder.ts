@@ -28,7 +28,12 @@ const borrowerPrivateKey = process.env.BORROWER_PRIVATE_KEY!
 
 const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY!
   
-
+if(!borrowerPrivateKey){
+    throw new Error("Missing borrower private key")
+}
+if(!lenderPrivateKey){
+    throw new Error("Missing lender private key")
+}
 
 const networkName = 'mainnet'
  
@@ -175,7 +180,7 @@ export async function executeReservoirOrder(): Promise<any> {
         verifyingContract: implementationContractAddress
     }
 
-  
+    console.log({domainData})
 
         //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
