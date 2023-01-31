@@ -17,7 +17,7 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
 
 const executeConfig = {
    
-  marketplaceId: 2
+  marketplaceId: 6
 
 } 
 
@@ -67,21 +67,26 @@ export async function callExecuteWithOffchain(): Promise<any> {
       signature_version: signatureVersion
     }
 
+
+
+    //call the  GET OFFERS endpoint of the cra server for this ! 
+
+
    // let craResponse = await performCraRequest( craInputs  )
-    let craResponse = {success:true, data: craResponseSample , error:'none'}
+    /*let craResponse = {success:true, data: craResponseSample , error:'none'}
 
     console.log('meep', craResponse)
     
 
     if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
-  
+ 
 
-    let executeParams = craResponse.data 
+    let executeParams = craResponse.data  
 
     if(typeof(executeParams.submitBidArgs.metadataURI) == 'undefined'){
       executeParams.submitBidArgs.metadataURI = "ipfs://"
     }
- 
+
 
     if(!borrowerPrivateKey) throw new Error('Missing borrowerPrivateKey')
 
@@ -213,7 +218,7 @@ export async function callExecuteWithOffchain(): Promise<any> {
 
     if((basicOrderParams.basicOrderType) > 22){
       throw new Error('invalid basic order type')
-    }
+    } */
  
    /* let unsignedTx = await bnplContractInstance
     .populateTransaction

@@ -1,7 +1,12 @@
 
 
 
+/*
 
+This calls executeUsingOffchainSignatures on ANPL using a reservoir order as an input 
+
+
+*/
 
 
 import { recoverSignerOfOffchainOffer } from '@clarity-credit/anpl-sdk'
@@ -25,7 +30,7 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY!
   
 
 
-const networkName = 'goerli'
+const networkName = 'mainnet'
  
 let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
@@ -40,7 +45,7 @@ const bnplConfig = {
     abi: require('../abi/BNPLMarketV3.json')
 }
 
-const chainId = "5"
+const chainId = "1"
 const marketId = "6"
  
 
@@ -55,7 +60,7 @@ Test w tenderly test RPC
 export async function executeReservoirOrder(): Promise<any> {
 
     
-    const orderId = "0x2cdc3cff138ad14ac994bf07543f6e1ee1658de5d1c29c78ee76f95f11bee5d2"
+    const orderId = "0x7ec099689d676e4ccc8ba7e7d1fe68eb4b56eb9d7bf81f86db5c4c5ec2958350"
    
     const orderResponse:ReservoirOrder|undefined = await fetchReservoirOrderById({orderId, chainId:parseInt(chainId)})
 
@@ -133,7 +138,7 @@ export async function executeReservoirOrder(): Promise<any> {
 
     const principal = calculatePrincipalRequiredForBorrowerPayout(
          amountRequiredForLoan, 
-         BigNumber.from(300),  //market fee for market 6 
+         BigNumber.from(0),  //market fee for market 6 
          BigNumber.from(5) //protocol fee 
          ).toString()
 

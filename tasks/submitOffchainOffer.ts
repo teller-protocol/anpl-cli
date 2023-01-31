@@ -6,11 +6,12 @@ import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-hel
  
 import { readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
 
-import {  DomainData, SubmitBidArgs } from '../lib/types'
+import {  DomainData, ReservoirOrder, SubmitBidArgs } from '../lib/types'
 
 import axios from 'axios'
 import { recoverSignerOfOffchainOffer, signOffchainOffer } from '@clarity-credit/anpl-sdk'
 import { BasicOrderParams } from '@clarity-credit/anpl-sdk/types/types'
+import { fetchReservoirOrderById, formatReservoirOrder } from '../lib/reservoir-helper'
 
 require('dotenv').config()
 
@@ -23,12 +24,12 @@ const lenderPrivateKey = process.env.LENDER_PRIVATE_KEY
 
 const executeConfig = {
    
-  marketplaceId: 2
+  marketplaceId: 6
 
 } 
 
 
-const craResponseSample = require('../test/data/sampleCraOutput.json')
+//const craResponseSample = require('../test/data/sampleCraOutput.json')
 
 
 let tokenInputData = require('../data/tokenInputData.json')
@@ -54,6 +55,21 @@ const bnplConfig = {
 
 export async function submitOffchainOffer(): Promise<any> {
 
+/*
+    const orderId = "0x2cdc3cff138ad14ac994bf07543f6e1ee1658de5d1c29c78ee76f95f11bee5d2"
+    
+    const orderResponse:ReservoirOrder|undefined = await fetchReservoirOrderById({orderId, chainId:parseInt(chainId)})
+
+    console.log({orderResponse})
+
+    if(!orderResponse){
+        throw new Error('No matching order from reservoir')
+    }
+
+    const {basicOrderParams}  = formatReservoirOrder( orderResponse )
+
+
+  
 
     let rpcProvider = new providers.JsonRpcProvider( rpcURI )
     
@@ -63,21 +79,11 @@ export async function submitOffchainOffer(): Promise<any> {
 
     let signatureVersion = await readSignatureVersionFromBNPLMarketContract(  bnplContractInstance )
 
-    
-
-   // let craResponse = await performCraRequest( craInputs  )
-    let craResponse = {success:true, data: craResponseSample , error:'none'}
- 
-    
-
-    if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
+     
+    //let craResponse = {success:true, data: craResponseSample , error:'none'}
   
-
-    let executeParams = craResponse.data 
-
-    if(typeof(executeParams.submitBidArgs.metadataURI) == 'undefined'){
-      executeParams.submitBidArgs.metadataURI = "ipfs://"
-    }
+    //if(!craResponse.success || !craResponse.data) throw new Error('cra error '.concat(craResponse.error.toString()))
+   
  
 
     if(!borrowerPrivateKey) throw new Error('Missing borrowerPrivateKey')
@@ -102,7 +108,7 @@ export async function submitOffchainOffer(): Promise<any> {
 
     let lenderAddress = lenderWallet.address
 
-    let basicOrderParams:BasicOrderParams = executeParams.basicOrderParams
+   // let basicOrderParams:BasicOrderParams = executeParams.basicOrderParams
 
     if(!basicOrderParams.offererConduitKey){
       throw new Error('Missing offererConduitKey')
@@ -141,6 +147,19 @@ export async function submitOffchainOffer(): Promise<any> {
 
       //fix it for now to remove referral and sig expir
       let formattedSubmitBidArgs:SubmitBidArgs = {
+        borrower: borrowerWallet.address,
+        totalPurchasePrice: submitBidArgs.totalPurchasePrice,
+        principal: submitBidArgs.principal,
+        downPayment: submitBidArgs.downPayment,       
+        duration: submitBidArgs.duration,       
+        signatureExpiration: submitBidArgs.signatureExpiration,
+        interestRate:submitBidArgs.interestRate,
+        referralAddress: submitBidArgs.referralAddress,
+        metadataURI: submitBidArgs.metadataURI ,
+        marketId:"2"
+      }
+
+      let formattedBasicOrderParams:BasicOrderParams = {
         borrower: borrowerWallet.address,
         totalPurchasePrice: submitBidArgs.totalPurchasePrice,
         principal: submitBidArgs.principal,
@@ -199,9 +218,9 @@ export async function submitOffchainOffer(): Promise<any> {
 
     let postResponse = await axios.post( url, data )
  
-  
+      console.log({postResponse})
    
-    return true 
+    return true */
   }
   
   
