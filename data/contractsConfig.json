@@ -1,20 +1,5 @@
 {
-  "rinkeby":{
-
-    "BNPLContract":{
-        "address": "0xdda8028461a69b58D72f4da46f4f050Ec2733968",
-        "domainSeparator":"0x8fb48d426451aba80032b939ea07f377a10fdd82aa899adb4f30a871b7d6e11d"
-    },
-    "seaport":{
-        "address": "0x00000000006c3852cbef3e08e8df289169ede581"
-    },
-    "tellerV2":{
-        "address": "0x21d3d541937de52ac5e4af6254d0d2134d9b7c9e"
-    },
-    "proxyAdmin":{
-      "address": " "
-   }
-  },
+  
 
   "goerli":{
 
@@ -32,7 +17,10 @@
     },
     "proxyAdmin":{
       "address": "0xD27FD721635de713dA155260F4Ca69b717B76Ef9"
-   }
+   },
+   "weth":{
+      "address": "0xffc94fB06B924e6dBA5F0325bbed941807a018CD"
+    }
   },
 
   "mainnet":{
@@ -52,7 +40,10 @@
     },
     "proxyAdmin":{
       "address": "0xcCfFa4e4cBE27D92f926E7B2e396a772Ddf0F2B2"
-   }
+   },
+   "weth":{
+    "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+    }
   }
 
 

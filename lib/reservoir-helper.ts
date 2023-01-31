@@ -26,33 +26,30 @@ const BLANK_SIGNATURE =
  
     const apiUrl = chainId==5 ? new URL('https://api-goerli.reservoir.tools/execute/list/v4') : new URL('https://api.reservoir.tools/execute/list/v4')
 
-    const currentSeconds = new Date().getSeconds()
+    const currentSeconds = Math.floor(Date.now() / 1000)
 
-    apiUrl.searchParams.set('maker', `${maker}`) 
-    apiUrl.searchParams.set('params',  
+    
 
-     JSON.stringify([
-      {
-        orderKind:'seaport',
-        orderbook:'reservoir',
-        automatedRoyalties: false,
-        currency,
-        token:`${tokenAddress}:${tokenId}`,
-        weiPrice,
-        fees:[],
-        listingTime: currentSeconds.toString(),
-        expirationTime: (currentSeconds+1000000).toString(),
+    const data = {
+      maker,
+      params: [
+        {
+          orderKind:'seaport',
+          orderbook:'reservoir',
+          automatedRoyalties: false,
+          currency:currency.toString(),
+          token:`${tokenAddress}:${tokenId}`,
+          weiPrice,
+          fees:[],
+          listingTime: currentSeconds.toString(),
+          expirationTime: (currentSeconds+1000000).toString(),
+    
+        
+        }
+  
+        ]
 
-
-
-
-      
-      }
-
-      ])
- 
-
-    )
+    }
   
     const headers = {
       'x-api-key': RESERVOIR_API_KEY, 
@@ -60,7 +57,20 @@ const BLANK_SIGNATURE =
      
     }
 
+    const response = await axios.post(apiUrl.toString(), data, { headers })
+   
 
+    console.log({response})
+
+    const stepsArray = response.data.steps
+
+    let steps:any = {}
+
+    stepsArray.map((step:any)=> steps[step.id] = step )
+
+    console.log({steps})
+
+    return {success:true, data: {steps}} 
   }
 
 export async function fetchReservoirOrderById(

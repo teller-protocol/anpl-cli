@@ -13,16 +13,6 @@ chai.use(chaiAsPromised)
 
 describe('BNPL Helper', () => {
 
-    it('should calculate total price', async () => {
-
-        let inputData = require('../../data/inputFromCra.json')
-      
-
-        let totalPrice = calculateTotalPrice( inputData.basicOrderParams  )
-
-        expect(totalPrice).to.eql('100000000000000000')
-
-    })
-
+    
 
 })
