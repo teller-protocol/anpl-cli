@@ -10,7 +10,7 @@ This calls executeUsingOffchainSignatures on ANPL using a reservoir order as an 
 
 
 import { recoverSignerOfOffchainOffer } from '@clarity-credit/anpl-sdk'
-import axios from 'axios'
+ 
 import { toChecksumAddress } from 'ethereumjs-util'
 import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 
@@ -35,8 +35,13 @@ if(!lenderPrivateKey){
     throw new Error("Missing lender private key")
 }
 
-const networkName = 'mainnet'
+const networkName = 'goerli'
  
+const chainId = "5"
+const marketId = "6"
+
+const MARKET_FEE = 300 //market fee for market 6. This is 300 on goerli and 0 on mainnet 
+
 let contractsConfig = require('../data/contractsConfig.json')[networkName]
 
 
@@ -50,22 +55,13 @@ const bnplConfig = {
     abi: require('../abi/BNPLMarketV3.json')
 }
 
-const chainId = "1"
-const marketId = "6"
- 
-
-/*
-
-Test w tenderly test RPC  
-
-*/
-
+  
 
 
 export async function executeReservoirOrder(): Promise<any> {
 
     
-    const orderId = "0x7ec099689d676e4ccc8ba7e7d1fe68eb4b56eb9d7bf81f86db5c4c5ec2958350"
+    const orderId = "0x119ade946590de42a3ed7a234070bc0e59ab05d6e0d7ca6d46d687997da6f6c1"
    
     const orderResponse:ReservoirOrder|undefined = await fetchReservoirOrderById({orderId, chainId:parseInt(chainId)})
 
@@ -143,7 +139,7 @@ export async function executeReservoirOrder(): Promise<any> {
 
     const principal = calculatePrincipalRequiredForBorrowerPayout(
          amountRequiredForLoan, 
-         BigNumber.from(0),  //market fee for market 6 
+         BigNumber.from(MARKET_FEE), 
          BigNumber.from(5) //protocol fee 
          ).toString()
 
@@ -245,8 +241,7 @@ export async function executeReservoirOrder(): Promise<any> {
       lenderSignature      
       , {   gasLimit, gasPrice} )
 
-  
-      console.log('made unsigned tx')
+   
 
     let response = await borrowerWallet.sendTransaction(unsignedTx);
     console.log('response',response)
