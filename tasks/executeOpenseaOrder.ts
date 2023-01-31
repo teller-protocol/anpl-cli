@@ -17,6 +17,7 @@ import {Contract, Wallet, providers, utils, BigNumber, ethers} from 'ethers'
 import { getRpcUrlFromNetworkName, networkNameFromChainId } from '../lib/app-helper'
  
 import { buildExecuteParams, calculateTotalPrice, generateBNPLOrderSignature, performCraRequest, readSignatureVersionFromBNPLMarketContract } from '../lib/bnpl-helper'
+import { formatOpenseaOrder } from '../lib/opensea-helper'
 import { fetchReservoirOrderById, formatReservoirOrder } from '../lib/reservoir-helper'
 import { calculatePrincipalRequiredForBorrowerPayout } from '../lib/teller-v2-lending-helper'
 
@@ -77,8 +78,11 @@ export async function executeReservoirOrder(): Promise<any> {
     if(!orderResponse){
         throw new Error('No matching order from reservoir')
     }
+
+
+    const formatType = 'reservoir' //or 'opensea'
  
-    const {basicOrderParams}  = formatReservoirOrder( orderResponse )
+    const {basicOrderParams}  = formatType == 'reservoir' ? formatReservoirOrder( orderResponse ) :  formatOpenseaOrder( orderResponse )
 
 
 

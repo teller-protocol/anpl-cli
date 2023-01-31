@@ -83,8 +83,11 @@ import {
   
 import * as WyvernSchemas from 'wyvern-schemas'
 import { Schema } from 'wyvern-schemas/dist/types'
+import { formatBasicOrderParams, generateBasicOrderParamsFromSeaport } from './seaport-helper'
+import { BasicOrderParams, BasicOrderParamsResponse, SeaportProtocolData, SeaportProtocolParameters } from './types'
 
 const _ = require('lodash')
+
 
 /*
 see https://github.com/ProjectOpenSea/opensea-js/blob/master/src/index.ts#L7-L10
@@ -93,6 +96,32 @@ see https://github.com/ProjectOpenSea/opensea-js/blob/master/src/index.ts#L7-L10
 */
 
 
+export interface SeaportOrder {
+  created_date: string
+  closing_date: string
+  listing_time: number
+  expiration_time: number
+  order_hash: string
+  protocol_data: SeaportProtocolData
+  protocol_address: string
+  maker: any
+  taker: any
+  current_price: string
+  maker_fees: any[]
+  taker_fees: any[]
+  side: string
+  order_type: string
+  cancelled: boolean
+  finalized: boolean
+  marked_invalid: boolean
+  client_signature: string
+  relay_id: string
+  criteria_proof: string
+  maker_asset_bundle: any
+  taker_asset_bundle: any
+}
+
+ 
 //from wyvern-js
 interface AnnotatedFunctionABI {
   type: AbiType;
@@ -1639,3 +1668,25 @@ export const OpenseaHelper = {
     return result
   },
 }
+
+
+
+export function formatOpenseaOrder(order: SeaportOrder): {
+  order: SeaportOrder
+  basicOrderParams?: BasicOrderParamsResponse
+} {
+ 
+
+  const protocolData:SeaportProtocolData = order.protocol_data 
+
+  const generatedOrderParams: BasicOrderParams =
+    generateBasicOrderParamsFromSeaport(protocolData)
+
+  return {
+    order: order,
+    basicOrderParams: formatBasicOrderParams(generatedOrderParams),
+  }
+}
+
+
+
