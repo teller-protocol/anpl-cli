@@ -28,6 +28,7 @@ let contractsConfig = require('../data/contractsConfig.json')[networkName]
 const rpcURI = getRpcUrlFromNetworkName(networkName) 
 
 const WETH_ADDRESS = contractsConfig.weth.address
+const USDC_ADDRESS = contractsConfig.usdc.address
 
 const reservoirMarketConduit = "0x1e0049783f008a0085193e00003d00cd54003c71"
 
@@ -42,7 +43,7 @@ export async function createReservoirListing(): Promise<any> {
 
     const nftTokenId="3439"
 
-    const listingPriceWei= utils.parseUnits("0.05","ether").toString()
+    const listingPriceUsdcRaw = (50 * 1000000).toString()
 
     //---------------------
 
@@ -56,15 +57,15 @@ export async function createReservoirListing(): Promise<any> {
     const sellerAddress = sellerWallet.address
 
 
-    console.log({WETH_ADDRESS})
+    console.log({USDC_ADDRESS})
 
     const orderResponse:any = await createReservoirOrder(
         {chainId:parseInt(chainId),
          maker: sellerAddress,
-         currency: WETH_ADDRESS,
+         currency: USDC_ADDRESS,
          tokenAddress: nftTokenAddress,
          tokenId: nftTokenId,
-         weiPrice: listingPriceWei         
+         priceRaw: listingPriceUsdcRaw         
         })
 
     console.log({orderResponse})
@@ -85,26 +86,33 @@ export async function createReservoirListing(): Promise<any> {
     console.log({signature})
     
 
-   /* const signatureResponse:any = await submitSignedReservoirOrder(
+    const signatureResponse:any = await submitSignedReservoirOrder(
         {orderData}
     )
 
     const orderId = signatureResponse.data.orderId
-    console.log({orderId})*/
+    console.log({orderId}) 
 
     let approvalStep = steps['nft-approval']  
 
     console.log({approvalStep})
     console.log(JSON.stringify(approvalStep))
+
+    const hasBeenApproved = approvalStep.items[0].status == 'complete'
         //use rpc 
+    if(!hasBeenApproved){
 
-    let nftContract = new Contract(nftTokenAddress,ERC721ABI,sellerWallet)
+        let nftContract = new Contract(nftTokenAddress,ERC721ABI,sellerWallet)
     
-    let approval = await nftContract.setApprovalForAll(reservoirMarketConduit, true)
+        let approval = await nftContract.setApprovalForAll(reservoirMarketConduit, true)
+    
+        console.log({approval}) 
 
-    console.log({approval})
+    }
+
+
 
     return orderResponse
 
-
+// orderid 0x8439ab6c7391d8d5d97aa79a496e44afcd7ad4e3a0b7d9b7e18502918b63033e
   }

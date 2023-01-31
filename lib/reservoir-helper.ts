@@ -13,13 +13,13 @@ const BLANK_SIGNATURE =
   
 
   export async function createReservoirOrder(
-    {chainId, maker, currency, tokenAddress, tokenId, weiPrice }:
+    {chainId, maker, currency, tokenAddress, tokenId, priceRaw }:
     {chainId?:number,
      maker:string,
      currency:string,
      tokenAddress:string,
      tokenId:string,
-     weiPrice:string
+     priceRaw:string
     }
   ): Promise<any> {
  
@@ -37,7 +37,7 @@ const BLANK_SIGNATURE =
           automatedRoyalties: false,
           currency:currency.toString(),
           token:`${tokenAddress}:${tokenId}`,
-          weiPrice,
+          weiPrice: priceRaw,
           fees:[],
           listingTime: currentSeconds.toString(),
           expirationTime: (currentSeconds+1000000).toString(),
